@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Details · Alice & Oliver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Wedding details, schedule, travel and accommodation.">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- ACCESSIBILITY -->
+<a class="visually-hidden" href="#main">Skip to content</a>
+
+<!-- FLOATING NAV -->
+<header class="floating-nav">
+  <div class="floating-nav__inner">
+
+    <div class="floating-nav__brand script">
+      Alice & Oliver
+    </div>
+
+    <nav class="floating-nav__links">
+      <a href="index.html">Home</a>
+      <a href="story.html">Story</a>
+      <a href="details.html" class="active">Details</a>
+      <a href="rsvp.html">RSVP</a>
+    </nav>
+
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO (no image – keep clean) -->
+  <section class="section text-center" style="padding-top:140px;">
+    <p class="script">The Weekend</p>
+    <h1>Wedding Details</h1>
+    <p>Prince Albert, Karoo</p>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="section">
+    <div class="text-center">
+      <h2>Schedule</h2>
+    </div>
+
+    <div class="container" style="max-width:600px; margin-top:40px;">
+
+      <div class="timeline-item">
+        <strong>Friday</strong><br>
+        Welcome drinks & pizza evening
+        <!-- TODO: Add location -->
+      </div>
+
+      <div class="timeline-item">
+        <strong>Saturday</strong><br>
+        Ceremony, cocktails & reception
+      </div>
+
+      <div class="timeline-item">
+        <strong>Sunday</strong><br>
+        Recovery brunch
+      </div>
+
+    </div>
+  </section>
+
+  <!-- VENUE -->
+  <section class="section">
+    <div class="text-center">
+      <h2>Venue</h2>
+      <p>Prince Albert, Western Cape</p>
+
+      <a 
+        href="https://maps.google.com" 
+        target="_blank" 
+        class="link"
+      >
+        Open in Google Maps
+      </a>
+
+      <!-- TODO: Replace with real map link -->
+    </div>
+  </section>
+
+  <!-- STAY -->
+  <section class="section">
+    <div class="text-center">
+      <h2>Where to Stay</h2>
+      <p>
+        We recommend booking early as accommodation in Prince Albert is limited.
+      </p>
+    </div>
+
+    <div class="container" style="max-width:600px; margin-top:40px;">
+
+      <p><strong>Option 1:</strong> Guesthouses in town</p>
+      <p><strong>Option 2:</strong> Farm stays nearby</p>
+
+      <!-- TODO:
+      Add:
+      - Specific recommendations
+      - Links
+      - Distance from venue
+      -->
+
+    </div>
+  </section>
+
+  <!-- TRAVEL -->
+  <section class="section">
+    <div class="text-center">
+      <h2>Travel</h2>
+      <p>
+        Prince Albert is approximately 4.5–5 hours from Cape Town.
+      </p>
+
+      <div style="margin-top:20px;">
+        <p><strong>By car:</strong> Recommended</p>
+        <p><strong>Weather:</strong> Warm days, cool evenings</p>
+      </div>
+
+      <!-- TODO:
+      Add:
+      - Road tips
+      - Petrol stops
+      - Carpool suggestions
+      -->
+    </div>
+  </section>
+
+  <!-- RSVP REMINDER -->
+  <section class="section text-center">
+    <h2>Join Us</h2>
+    <p>Please RSVP so we can share final details with you.</p>
+    <a href="rsvp.html" class="link">RSVP</a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>© 2026 Alice & Oliver</p>
+</footer>
+
+<!-- SCROLL NAV SCRIPT -->
+<script>
+  document.addEventListener("scroll", function () {
+    const nav = document.querySelector(".floating-nav");
+    if (window.scrollY > 50) {
+      nav.classList.add("scrolled");
+    } else {
+      nav.classList.remove("scrolled");
+    }
+  });
+</script>
+
+</body>
+</html>
