@@ -4,65 +4,113 @@
   <meta charset="utf-8">
   <title>Details · Alice & Oliver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Wedding details, schedule, travel and accommodation.">
+  <meta name="description" content="Wedding details, schedule, travel and accommodation — Alice & Oliver, Prince Albert, April 2027.">
+
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             base-uri 'self';
+             form-action 'self';
+             upgrade-insecure-requests">
 
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<!-- ACCESSIBILITY -->
 <a class="visually-hidden" href="#main">Skip to content</a>
 
-<!-- FLOATING NAV -->
-<header class="floating-nav">
+<!--
+  REDIRECT GUARD
+  Details are only visible to guests who have passed the password gate.
+  If sessionStorage token is absent, send them back to index.html to authenticate.
+-->
+<script>
+  if (sessionStorage.getItem('wt_auth') !== '1') {
+    window.location.replace('index.html');
+  }
+</script>
+
+<!-- FLOATING NAV — dark variant: no full-bleed hero on this page -->
+<header class="floating-nav floating-nav--dark" id="main-nav">
   <div class="floating-nav__inner">
-
-    <div class="floating-nav__brand script">
-      Alice & Oliver
-    </div>
-
-    <nav class="floating-nav__links">
+    <a href="index.html" class="floating-nav__brand script">Alice & Oliver</a>
+    <nav class="floating-nav__links" aria-label="Primary">
       <a href="index.html">Home</a>
-      <a href="story.html">Story</a>
+      <a href="our-story.html">Story</a>
       <a href="details.html" class="active">Details</a>
+      <a href="gallery.html">Gallery</a>
       <a href="rsvp.html">RSVP</a>
     </nav>
-
   </div>
 </header>
 
 <main id="main">
 
-  <!-- HERO (no image – keep clean) -->
-  <section class="section text-center" style="padding-top:140px;">
-    <p class="script">The Weekend</p>
+  <!-- PAGE HEADER -->
+  <section class="section text-center" style="padding-top: 140px; padding-bottom: var(--space-2);">
+    <p class="script" style="font-size: 1.6rem; margin-bottom: 8px;">The Weekend</p>
     <h1>Wedding Details</h1>
-    <p>Prince Albert, Karoo</p>
+    <p style="color: var(--color-muted);">
+      4–6 April 2027 &middot; Prince Albert, Karoo
+      <!--
+        TODO: Confirm exact dates once finalised (Friday welcome / Saturday wedding / Sunday brunch).
+      -->
+    </p>
   </section>
 
-  <!-- TIMELINE -->
+  <!-- OPTIONAL: Short hero image below the heading -->
+  <section style="padding: 0 var(--space-2) var(--space-4);">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <!--
+        PHOTO — images/details-hero.jpg
+        A wide shot of Prince Albert or the venue grounds.
+        Recommended: 1800×900px, replace .img-placeholder with <img> when ready:
+        <img src="images/details-hero.jpg" alt="Prince Albert, Karoo" style="width:100%; display:block;">
+      -->
+      <div class="img-wrapper img-wrapper--wide"
+           aria-label="[REPLACE: wide landscape of Prince Albert or venue grounds]">
+           
+        <img src="images/al_ol_engmt2.JPG" alt="Alice and Oliver" style="width:100%; display:block;">
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE / TIMELINE -->
   <section class="section">
-    <div class="text-center">
-      <h2>Schedule</h2>
+    <div class="text-center" style="margin-bottom: var(--space-3);">
+      <h2>The Schedule</h2>
     </div>
 
-    <div class="container" style="max-width:600px; margin-top:40px;">
+    <div style="max-width: 600px; margin: 0 auto;">
 
       <div class="timeline-item">
-        <strong>Friday</strong><br>
-        Welcome drinks & pizza evening
-        <!-- TODO: Add location -->
+        <span class="timeline-item__day">Friday · 2 April</span>
+        <strong>Welcome drinks &amp; MoonScape evening</strong>
+        <!--
+          TODO: Add specific time and location for Friday night gathering.
+          E.g. "From 18:00 at [venue name / address]"
+        -->
       </div>
 
       <div class="timeline-item">
-        <strong>Saturday</strong><br>
-        Ceremony, cocktails & reception
+        <span class="timeline-item__day">Saturday · 3 April</span>
+        <strong>Ceremony, cocktails &amp; reception</strong>
+        <!--
+          TODO: Add ceremony time, cocktail start time, and reception details.
+          E.g. "Ceremony at 15:00 · Cocktails from 16:00 · Reception from 18:00"
+        -->
       </div>
 
       <div class="timeline-item">
-        <strong>Sunday</strong><br>
-        Recovery brunch
+        <span class="timeline-item__day">Sunday · 4 April</span>
+        <strong>Recovery brunch</strong>
+        <!--
+          TODO: Add brunch time and venue details.
+          E.g. "From 10:00 at [location]"
+        -->
       </div>
 
     </div>
@@ -72,87 +120,215 @@
   <section class="section">
     <div class="text-center">
       <h2>Venue</h2>
-      <p>Prince Albert, Western Cape</p>
+      <p>
+        <!--
+          TODO: Replace placeholder below with the confirmed venue name.
+        -->
+        Prince Albert, Western Cape
+      </p>
 
-      <a 
-        href="https://maps.google.com" 
-        target="_blank" 
+      <div style="margin: var(--space-2) 0;">
+        <!--
+          PHOTO — images/venue.jpg
+          Exterior or interior of the venue.
+          Recommended: 1200×800px, warm lighting.
+          Replace .img-placeholder with <img> when ready:
+          <img src="images/venue.jpg" alt="[Venue name]" style="width:100%; max-width:700px; margin:0 auto; display:block;">
+        -->
+        <div class="img-wrapper img-wrapper--landscape"
+             style="max-width: 700px; margin: 0 auto;"
+             aria-label="[REPLACE: venue exterior or interior photo]">
+              <img src="images/al_ol_ptgl.jpeg" alt="[Venue name]" style="width:100%; max-width:700px; margin:0 auto; display:block;">
+        </div>
+      </div>
+
+      <a
+        href="https://maps.google.com"
+        target="_blank"
+        rel="noopener noreferrer"
         class="link"
       >
         Open in Google Maps
       </a>
-
-      <!-- TODO: Replace with real map link -->
+      <!--
+        TODO: Replace the href above with the real Google Maps link to the venue.
+        Right-click the venue in Google Maps → Share → Copy link
+      -->
     </div>
   </section>
 
-  <!-- STAY -->
+  <!-- DRESS CODE & PRACTICAL INFO — 2 col -->
   <section class="section">
-    <div class="text-center">
+    <div class="text-center" style="margin-bottom: var(--space-3);">
+      <h2>Good to Know</h2>
+    </div>
+
+    <div class="two-col" style="max-width: 700px;">
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          Dress code
+        </h3>
+        <p>
+          Smart linen casual.
+          <!--
+            TODO: Expand dress code once decided.
+            E.g. colour palette suggestion, heels advice for outdoor terrain, etc.
+          -->
+        </p>
+      </div>
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          Weather
+        </h3>
+        <p>
+          April in the Karoo means warm days and cool evenings.
+          We recommend bringing a light layer for after sundown.
+        </p>
+      </div>
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          Children
+        </h3>
+        <p>
+          <!--
+            TODO: Confirm your children policy and update this.
+            Options: child-friendly / adults only / over-12s welcome, etc.
+          -->
+          Please email us if you have questions about bringing children.
+        </p>
+      </div>
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          Parking
+        </h3>
+        <p>
+          <!--
+            TODO: Add parking info once the venue confirms arrangements.
+          -->
+          Parking details to follow — we'll update this page once confirmed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHERE TO STAY -->
+  <section class="section">
+    <div class="text-center" style="margin-bottom: var(--space-3);">
       <h2>Where to Stay</h2>
       <p>
-        We recommend booking early as accommodation in Prince Albert is limited.
+        We recommend booking early — accommodation in Prince Albert fills up quickly.
       </p>
     </div>
 
-    <div class="container" style="max-width:600px; margin-top:40px;">
+    <div style="max-width: 600px; margin: 0 auto;">
 
-      <p><strong>Option 1:</strong> Guesthouses in town</p>
-      <p><strong>Option 2:</strong> Farm stays nearby</p>
+      <!--
+        TODO: Replace these placeholder entries with real accommodation recommendations.
+        For each option, add:
+        - Name of property
+        - Short description (style, distance from venue)
+        - Booking link
+        - Approximate price per night (optional)
 
-      <!-- TODO:
-      Add:
-      - Specific recommendations
-      - Links
-      - Distance from venue
+        Example format shown below — duplicate the block as needed.
       -->
+
+      <div class="timeline-item">
+        <span class="timeline-item__day">Option 1</span>
+        <strong>Guesthouses in town</strong><br>
+        Several well-reviewed guesthouses within walking distance of the centre.
+        <!-- <a href="#" class="link" target="_blank" rel="noopener noreferrer">Browse options</a> -->
+      </div>
+
+      <div class="timeline-item">
+        <span class="timeline-item__day">Option 2</span>
+        <strong>Farm stays nearby</strong><br>
+        Self-catering cottages on farms in the surrounding valley. Ideal for groups.
+        <!-- <a href="#" class="link" target="_blank" rel="noopener noreferrer">Browse options</a> -->
+      </div>
+
+      <div class="timeline-item">
+        <span class="timeline-item__day">Option 3 — TODO</span>
+        <strong>[Add a third recommendation]</strong><br>
+        <!--
+          TODO: Add a third accommodation option.
+          Consider: one budget, one mid-range, one splurge.
+        -->
+      </div>
 
     </div>
   </section>
 
   <!-- TRAVEL -->
   <section class="section">
-    <div class="text-center">
-      <h2>Travel</h2>
+    <div class="text-center" style="margin-bottom: var(--space-3);">
+      <h2>Getting There</h2>
       <p>
-        Prince Albert is approximately 4.5–5 hours from Cape Town.
+        Prince Albert is approximately 4.5–5 hours from Cape Town via the N1
+        and Huguenot Tunnel. The drive through the Huguenot and Du Toitskloof
+        passes is beautiful — allow extra time to enjoy it.
       </p>
+    </div>
 
-      <div style="margin-top:20px;">
-        <p><strong>By car:</strong> Recommended</p>
-        <p><strong>Weather:</strong> Warm days, cool evenings</p>
+    <div class="two-col" style="max-width: 700px;">
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          By car
+        </h3>
+        <p>
+          Recommended. Fuel up in Matjiesfontein or Leeu-Gamka — petrol
+          stations in Prince Albert itself are limited.
+          <!--
+            TODO: Add specific route tips and any road notes (e.g. gravel sections).
+          -->
+        </p>
       </div>
-
-      <!-- TODO:
-      Add:
-      - Road tips
-      - Petrol stops
-      - Carpool suggestions
-      -->
+      <div>
+        <h3 style="font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">
+          Carpooling
+        </h3>
+        <p>
+          <!--
+            TODO: Add carpool coordination note or WhatsApp group link once arranged.
+            E.g. "We're coordinating a carpool group — add your name to the list."
+          -->
+          If you're travelling from Cape Town and need a lift, let us know and
+          we'll help connect you with others making the journey.
+        </p>
+      </div>
     </div>
   </section>
 
-  <!-- RSVP REMINDER -->
+  <!-- RSVP REMINDER CTA -->
   <section class="section text-center">
-    <h2>Join Us</h2>
-    <p>Please RSVP so we can share final details with you.</p>
-    <a href="rsvp.html" class="link">RSVP</a>
+    <h2>Not yet RSVP'd?</h2>
+    <p>Please let us know by <strong>1 September 2026</strong> — we'd love to have you with us.</p>
+    <!--
+      TODO: Confirm RSVP deadline and update here and on index.html to match.
+    -->
+    <a href="rsvp.html" class="btn">RSVP now</a>
   </section>
 
 </main>
 
 <footer class="footer">
-  <p>© 2026 Alice & Oliver</p>
+  <p>
+    &copy; 2027 Alice Hutchinson-Keip &amp; Oliver Vincent
+    &nbsp;&middot;&nbsp;
+    <a href="mailto:olicevincent@gmail.com">Contact us</a>
+    <!--
+      TODO: Replace with your real email address before going live. - Done
+    -->
+  </p>
 </footer>
 
-<!-- SCROLL NAV SCRIPT -->
 <script>
-  document.addEventListener("scroll", function () {
-    const nav = document.querySelector(".floating-nav");
+  document.addEventListener('scroll', function () {
+    const nav = document.querySelector('.floating-nav');
     if (window.scrollY > 50) {
-      nav.classList.add("scrolled");
+      nav.classList.add('scrolled');
     } else {
-      nav.classList.remove("scrolled");
+      nav.classList.remove('scrolled');
     }
   });
 </script>
