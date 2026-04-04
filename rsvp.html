@@ -1,132 +1,715 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>RSVP � Alice and Oliver</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="RSVP to the wedding of Alice and Oliver.">
-    <link rel="canonical" href="https://your-domain.example/rsvp.html">
-    <link rel="icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta property="og:title" content="RSVP � Alice and Oliver">
-    <meta property="og:description" content="Let us know if you can join us.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-domain.example/rsvp.html">
-    <meta property="og:image" content="https://your-domain.example/og-image.jpg">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="RSVP � Alice and Oliver">
-    <meta name="twitter:description" content="Let us know if you can join us.">
-    <meta name="twitter:image" content="https://your-domain.example/og-image.jpg">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; form-action 'self' https:; upgrade-insecure-requests">
-    <link rel="stylesheet" href="styles.css">
-    <script>document.addEventListener('DOMContentLoaded',function(){
-      const form=document.getElementById('rsvp-form');
-      const live=document.getElementById('form-live');
-      function setError(id,msg){
-        const el=document.getElementById(id);
-        el.setAttribute('aria-invalid','true');
-        const err=document.getElementById(id+'-error');
-        err.textContent=msg;
-        live.textContent=msg;
-      }
-      function clearError(id){
-        const el=document.getElementById(id);
-        el.removeAttribute('aria-invalid');
-        const err=document.getElementById(id+'-error');
-        err.textContent='';
-      }
-      form.addEventListener('submit',function(e){
-        let ok=true;
-        clearError('name'); clearError('email'); clearError('attendance');
+  <meta charset="utf-8">
+  <title>RSVP · Alice & Oliver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RSVP to the wedding of Alice Hutchinson-Keip and Oliver Vincent.">
 
-        const name=document.getElementById('name').value.trim();
-        const email=document.getElementById('email').value.trim();
-        const attendance=document.getElementById('attendance').value;
-        const honeypot=document.getElementById('company').value;
+  <!--
+    CSP: Google Forms embed requires docs.google.com and forms.gle.
+    frame-src added to permit the iframe.
+    If you switch to a link-out button instead of embed, remove frame-src.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             frame-src https://docs.google.com;
+             base-uri 'self';
+             form-action 'self' https://docs.google.com;
+             upgrade-insecure-requests">
 
-        if(honeypot){ ok=false; }
-
-        if(!name){ ok=false; setError('name','Please enter your full name.'); }
-        if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ ok=false; setError('email','Please enter a valid email.'); }
-        if(!attendance){ ok=false; setError('attendance','Please select your attendance.'); }
-
-        if(!ok){ e.preventDefault(); }
-      });
-    });</script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <a class="visually-hidden" href="#main">Skip to content</a>
-    <header class="header">
-        <div class="container header__inner">
-            <div class="header__brand">Alice and Oliver</div>
-            <button id="nav-toggle" class="nav-toggle" aria-controls="site-nav" aria-expanded="false">Menu</button>
-            <nav id="site-nav" class="nav" aria-label="Primary">
-                <ul class="nav__list">
-                    <li><a class="nav__link" href="index.html">Home</a></li>
-                    <li><a class="nav__link" href="rsvp.html" aria-current="page">RSVP</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <main id="main" class="container section">
-        <h1 style="font-size:var(--fs-h1);line-height:var(--lh-tight);margin-top:0">RSVP</h1>
-        <p class="helper">Please RSVP by June 1, 2026.</p>
+<a class="visually-hidden" href="#main">Skip to content</a>
+
+<!--
+  REDIRECT GUARD
+  If somehow a guest lands directly on rsvp.html without going through the
+  gate on index.html (e.g. shared link), redirect them.
+  This script runs immediately, before the page renders.
+-->
+<script>
+  if (sessionStorage.getItem('wt_auth') !== '1') {
+    window.location.replace('index.html');
+  }
+</script>
+
+<!-- FLOATING NAV — dark variant: no hero image on this page -->
+<header class="floating-nav floating-nav--dark" id="main-nav">
+  <div class="floating-nav__inner">
+    <a href="index.html" class="floating-nav__brand script">Alice & Oliver</a>
+    <nav class="floating-nav__links" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="our-story.html">Story</a>
+      <a href="details.html">Details</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="rsvp.html" class="active">RSVP</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="section text-center" style="padding-top: 140px;">
+    <p class="body" style="font-size:1.8rem; margin-bottom:8px;">RSVP</p>
+    <h1 class = "script" style="margin-bottom: 8px;">Alice &amp; Oliver</h1>
+    <p style="color: var(--color-muted); font-size: 0.9rem; letter-spacing: 0.06em;">
+      Please respond by <strong>1 September 2026</strong>
+      <!--
+        TODO: Update RSVP deadline once confirmed.
+      -->
+    </p>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="form-wrap">
+
+      <!-- STEP 1: Guest lookup -->
+      <div id="step-lookup">
+        <p style="text-align:center; color: var(--color-muted); margin-bottom: var(--space-3); font-size:0.9rem;">
+          Enter your name as it appears on your invitation to get started.
+        </p>
+
+        <div class="form__group">
+          <label for="lookup-name" class="label">Your name</label>
+          <input
+            id="lookup-name"
+            class="input"
+            type="text"
+            autocomplete="name"
+            placeholder="e.g. Jane Smith"
+            aria-describedby="lookup-error"
+          >
+          <p id="lookup-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <button id="lookup-btn" class="btn" style="width:100%;">Find my invitation</button>
+
+        <p style="text-align:center; margin-top: var(--space-2); font-size:0.82rem; color:var(--color-muted);">
+          Can't find your name?
+          <a href="mailto:olicevincent@gmail.com?subject=RSVP%20query" class="link">Email us</a>
+          <!--
+            TODO: Replace with your real email address. --Done
+          -->
+        </p>
+      </div>
+      <!-- END STEP 1 -->
+
+      <!-- STEP 2: RSVP form — shown after guest lookup succeeds -->
+      <div id="step-rsvp" style="display:none;">
+
+        <!-- Invited party summary -->
+        <div class="invited-party" id="invited-party-box" aria-live="polite">
+          <span class="invited-party__label">Your invitation includes</span>
+          <p class="invited-party__names" id="invited-party-names"></p>
+        </div>
+
         <div role="status" aria-live="polite" id="form-live" class="visually-hidden"></div>
 
-        <form id="rsvp-form" class="form" method="POST" action="/.netlify/functions/rsvp">
-            <input type="text" name="company" id="company" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <div class="form__group">
-                <label for="name" class="label">Full name</label>
-                <input id="name" name="name" class="input" type="text" autocomplete="name" required aria-describedby="name-error">
-                <div id="name-error" class="error" aria-live="polite"></div>
-            </div>
+        <form id="rsvp-form" novalidate>
 
-            <div class="form__group">
-                <label for="email" class="label">Email</label>
-                <input id="email" name="email" class="input" type="email" autocomplete="email" required aria-describedby="email-error">
-                <div id="email-error" class="error" aria-live="polite"></div>
-            </div>
+          <!-- Hidden field: primary guest name (set by lookup) -->
+          <input type="hidden" id="guest-key" name="guest_key">
 
-            <div class="form__group">
-                <label for="attendance" class="label">Attendance</label>
-                <select id="attendance" name="attendance" class="select" required aria-describedby="attendance-error">
-                    <option value="">Select...</option>
-                    <option value="accepts">Accepts with pleasure</option>
-                    <option value="declines">Declines with regret</option>
-                </select>
-                <div id="attendance-error" class="error" aria-live="polite"></div>
+          <!-- Attendance per person -->
+          <div class="form__group">
+            <span class="label">Who will be attending?</span>
+            <div class="attendance-grid" id="attendance-grid">
+              <!--
+                Populated dynamically by JS based on the guest list lookup.
+                Each invited person gets one row with Yes / No radio buttons.
+              -->
             </div>
+          <p id="attendance-error" class="error" aria-live="polite"></p>
+          </div>
 
-            <div class="form__group">
-                <label for="guests" class="label">Number of guests (including you)</label>
-                <input id="guests" name="guests" class="input" type="number" min="1" max="10" value="1">
-                <div class="helper">If bringing guests, include their names in the message.</div>
-            </div>
+          <!-- Primary guest email -->
+          <div class="form__group">
+            <label for="primary-email" class="label">Your email address</label>
+            <input
+              id="primary-email"
+              name="_replyto"
+              class="input"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="your@email.com"
+              aria-describedby="primary-email-error"
+            >
+            <p id="primary-email-error" class="error" aria-live="polite"></p>
+            <p class="helper">We'll send your confirmation here. Not shared with anyone else.</p>
+          </div>
 
-            <div class="form__group">
-                <label for="dietary" class="label">Dietary preferences</label>
-                <input id="dietary" name="dietary" class="input" type="text" placeholder="Vegetarian, gluten-free, etc.">
-            </div>
+          <!-- Plus-one email — only shown if invite has 2+ people -->
+          <div class="form__group" id="plusone-email-group" style="display:none;">
+            <label for="plusone-email" class="label">
+              Plus-one email
+              <span style="font-size:0.75rem; text-transform:none; letter-spacing:0; font-weight:normal;">(optional)</span>
+            </label>
+            <input
+              id="plusone-email"
+              name="plusone_email"
+              class="input"
+              type="email"
+              autocomplete="off"
+              placeholder="their@email.com"
+            >
+            <p class="helper">If they're attending, we'll send them a confirmation too.</p>
+          </div>
 
-            <div class="form__group">
-                <label for="message" class="label">Message</label>
-                <textarea id="message" name="message" class="textarea" rows="4"></textarea>
-            </div>
+          <!-- Dietary requirements -->
+          <div class="form__group">
+            <label for="dietary" class="label">Dietary requirements</label>
+            <input
+              id="dietary"
+              name="dietary"
+              class="input"
+              type="text"
+              placeholder="Vegetarian, gluten-free, nut allergy, etc."
+              autocomplete="off"
+            >
+            <p class="helper">List all dietary needs across your party — we'll ensure the caterers know.</p>
+          </div>
 
-            <div class="form__actions">
-                <button type="submit" class="btn">Send RSVP</button>
-                <a class="nav__link" href="index.html">Back to Home</a>
-            </div>
+          <!-- Song request -->
+          <div class="form__group">
+            <label for="song" class="label">Song request</label>
+            <input
+              id="song"
+              name="song"
+              class="input"
+              type="text"
+              placeholder="What gets you on the dance floor?"
+              autocomplete="off"
+            >
+          </div>
 
-            <p class="helper">We'll email a confirmation after submission.</p>
+          <!-- Message -->
+          <div class="form__group">
+            <label for="message" class="label">Message for the couple</label>
+            <textarea id="message" name="message" class="textarea" rows="4"></textarea>
+          </div>
+
+          <div class="form__group" style="margin-top: var(--space-3);">
+            <button type="submit" id="rsvp-submit" class="btn" style="width:100%;">
+              Send RSVP
+            </button>
+          </div>
+
         </form>
-    </main>
 
-    <footer class="footer">
-        <div class="container footer__inner">
-            <p>� 2026 Alice and Oliver � <a href="mailto:hello@example.com?subject=Wedding RSVP">Contact us</a></p>
-        </div>
-    </footer>
+        <button
+          id="wrong-guest-btn"
+          class="btn btn--outline"
+          style="width:100%; margin-top: 12px;"
+        >
+          Not you? Search again
+        </button>
+
+      </div>
+      <!-- END STEP 2 -->
+
+      <!-- STEP 3: Confirmation — shown after successful submit -->
+      <div id="step-confirm" class="form-confirmation">
+        <div class="form-confirmation__icon" aria-hidden="true">✓</div>
+        <h2 style="font-weight:normal;">Thank you!</h2>
+        <p id="confirm-message"></p>
+        <p style="color: var(--color-muted); font-size: 0.9rem; margin-top: var(--space-2);">
+          Questions or changes? <a href="mailto:olicevincent@gmail.com?subject=RSVP%20query" class="link">Email us</a>.
+          <!--
+            TODO: Replace with your real email address. --Done
+          -->
+        </p>
+        <a href="details.html" class="btn" style="margin-top: var(--space-3);">View weekend details</a>
+      </div>
+      <!-- END STEP 3 -->
+
+    </div>
+  </section>
+
+  <!--
+    GOOGLE FORM FALLBACK
+    ============================================================
+    If you prefer a simple Google Form embed instead of the
+    custom lookup form above, uncomment this section and comment
+    out the form-wrap section above.
+
+    To get your embed URL:
+    1. Open your Google Form
+    2. Click Send → Embed (<>)
+    3. Copy the src URL from the iframe code
+    4. Paste it into the src attribute below
+
+    NOTE: Google Forms styling cannot be customised much.
+    The custom form above integrates with your guest list and
+    matches the site aesthetic, which is why it is preferred.
+
+  <section class="section" style="padding-top:0;">
+    <div style="max-width:700px; margin: 0 auto;">
+      <iframe
+        src="PASTE_YOUR_GOOGLE_FORM_EMBED_URL_HERE"
+        width="100%"
+        height="900"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        title="RSVP Form"
+        style="border: 1px solid var(--color-border);"
+      >
+        Loading form…
+      </iframe>
+      <p style="font-size:0.82rem; color:var(--color-muted); margin-top:8px;">
+        Having trouble? <a href="PASTE_YOUR_GOOGLE_FORM_DIRECT_URL_HERE" target="_blank" class="link">Open the form directly</a>.
+      </p>
+    </div>
+  </section>
+  -->
+
+</main>
+
+<footer class="footer">
+  <p>
+    &copy; 2027 Alice Hutchinson-Keip &amp; Oliver Vincent
+    &nbsp;&middot;&nbsp;
+    <a href="mailto:olicevincent@gmail.com">Contact us</a>
+  </p>
+</footer>
+
+<script>
+/*
+  ============================================================
+  GUEST LIST
+  ============================================================
+  HOW TO EDIT:
+  Each entry in GUEST_LIST is one invitation unit (one envelope).
+
+  Key:      The primary guest's name, LOWERCASE, spaces normalised.
+            This is what guests type during lookup.
+
+  Value object:
+    names:  Array of everyone on this invitation.
+            First entry = primary invitee.
+            Second entry = plus-one (if applicable).
+            Names appear exactly as written on screen.
+
+    note:   Optional short note shown under the party summary.
+            E.g. "Evening only" or "Accommodation confirmed".
+            Leave as empty string "" if not needed.
+
+  ADDING A GUEST:
+    Add a new entry following the pattern below.
+    The key must be unique (two guests with the same name →
+    use a middle name or initial: "james a smith").
+
+  REMOVING A GUEST:
+    Delete their entry. The lookup will return "not found".
+
+  EXAMPLE ENTRIES ARE SHOWN — replace with your actual guest list.
+  ============================================================
+*/
+const GUEST_LIST = {
+  /* FORMAT: 'primary name lowercase': { names: [...], note: '' } */
+
+  'alice hutchinson-keip': {
+    names: ['Alice Hutchinson-Keip'],
+    note: 'Bride'
+  },
+  'oliver vincent': {
+    names: ['Oliver Vincent'],
+    note: 'Groom'
+  },
+
+  'nici loughran': {
+    names: ['Nici Loughran', 'Georgia Loughran'],
+    note: 'Cousin'
+  },
+  'mike loughran': {
+    names: ['Mike Loughran'],
+    note: 'Groom'
+  },
+  'amy wardle': {
+    names: ['Amy Wardle', 'Bear and Bambi'],
+    note: 'Bridesmaid'
+  },
+  'luke wardle': {
+    names: ['luke wardle'],
+    note: 'Friend'
+  },
+  'robert hutchinson-keip': {
+    names: ['Robert Hutchinson-Keip'],
+    note: 'Father of the Bride'
+  },
+  'holly hutchinson-keip': {
+    names: ['Holly Hutchinson-Keip'],
+    note: 'Mother of the Bride'
+  },
+  /* Couple invitation — both names listed */
+  'sarah jones': {
+    names: ['Sarah Jones', 'Michael Jones'],
+    note: ''
+  },
+
+  /* Solo invitation — no plus-one */
+  'james smith': {
+    names: ['James Smith'],
+    note: ''
+  },
+
+  /* Solo with plus-one (plus-one name not yet known) */
+  'priya patel': {
+    names: ['Priya Patel', 'Plus-one (Priya\'s guest)'],
+    note: 'You\'re welcome to bring a guest — please add their name in the message field.'
+  },
+
+  /*
+    ADD YOUR FULL GUEST LIST BELOW THIS LINE.
+    Delete the example entries above once you have real data.
+
+    Template:
+    'firstname lastname': {
+      names: ['Firstname Lastname'],
+      note: ''
+    },
+  */
+
+};
+
+/*
+  ============================================================
+  GOOGLE FORM SUBMISSION
+  ============================================================
+  The custom form above submits responses to a Google Form
+  so all responses land in your Google Sheet automatically.
+
+  HOW TO SET UP:
+  1. Create a Google Form with these fields:
+       - Guest key (short answer)
+       - Attending names (paragraph)
+       - Declining names (paragraph)
+       - Dietary requirements (short answer)
+       - Song request (short answer)
+       - Message (paragraph)
+
+  2. Get the form's prefill URL:
+     Open the form → three-dot menu → Get pre-filled link
+     Fill in dummy values → Get link
+     Copy the URL — it will look like:
+     https://docs.google.com/forms/d/e/XXXXX/viewform?usp=pp_url&entry.123=value&entry.456=value
+
+     https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/viewform?usp=pp_url
+     &entry.102251949=Oliver+Vincent
+     &entry.915626348=Yes
+     &entry.298352296=No
+     &entry.1784969038=ol
+     &entry.1814084214=plenty
+     &entry.1670549511=lets+go
+     &entry.366955240=here+and+there
+
+
+     https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/viewform?usp=pp_url
+     &entry.102251949=Oliver+Vincent
+     &entry.915626348=Yes
+     &entry.298352296=No
+     &entry.1784969038=olicevincent@gmail.com
+     &entry.1814084214=Nothing
+     &entry.1670549511=You+and+Me+baby
+     &entry.366955240=Hi
+
+  3. From that URL, extract:
+     - The form action URL (everything before ?usp=...)
+       → paste into FORM_ACTION below
+     - The entry IDs (entry.XXXXXXX numbers)
+       → map each to the correct field below
+
+  4. Test: submit the form on the site and check your Google Sheet.
+
+  ============================================================
+*/
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/formResponse';
+
+/*
+  Map each field to its Google Form entry ID.
+  Replace entry.XXXXXXXX with your real IDs from the prefill URL.
+*/
+const FORM_FIELDS = {
+  guestKey:      'entry.102251949',  /* TODO: replace with real entry ID */
+  attending:     'entry.915626348',  /* TODO: replace with real entry ID */
+  declining:     'entry.298352296',  /* TODO: replace with real entry ID */
+  email:         'entry.1784969038',  /* TODO: replace with real entry ID */
+  dietary:       'entry.1814084214',  /* TODO: replace with real entry ID */
+  song:          'entry.1670549511',  /* TODO: replace with real entry ID */
+  message:       'entry.366955240',  /* TODO: replace with real entry ID */
+};
+
+/* ============================================================
+   LOOKUP LOGIC — do not edit below this line unless you need
+   to change behaviour
+   ============================================================ */
+
+const stepLookup  = document.getElementById('step-lookup');
+const stepRsvp    = document.getElementById('step-rsvp');
+const stepConfirm = document.getElementById('step-confirm');
+
+const lookupInput = document.getElementById('lookup-name');
+const lookupBtn   = document.getElementById('lookup-btn');
+const lookupError = document.getElementById('lookup-error');
+
+const attendanceGrid    = document.getElementById('attendance-grid');
+const invitedPartyNames = document.getElementById('invited-party-names');
+const guestKeyInput     = document.getElementById('guest-key');
+
+let currentGuest = null; /* The matched GUEST_LIST entry */
+
+function normaliseName(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function findGuest(rawInput) {
+  const key = normaliseName(rawInput);
+  if (GUEST_LIST[key]) {
+    return { key: key, ...GUEST_LIST[key] };
+  }
+  /* Fuzzy fallback: check if input appears as a first or last word of any key */
+  for (const [k, v] of Object.entries(GUEST_LIST)) {
+    if (k.includes(key) || key.includes(k.split(' ')[0])) {
+      /* Only return if it's an unambiguous partial match (first name only) */
+      const parts = k.split(' ');
+      if (key === parts[0] || key === parts[parts.length - 1]) {
+        return { key: k, ...v };
+      }
+    }
+  }
+  return null;
+}
+
+function buildAttendanceGrid(guest) {
+  const grid = document.getElementById('attendance-grid');
+  grid.innerHTML = '';
+
+  /* Show plus-one email only if there are 2+ people on the invite */
+  document.getElementById('plusone-email-group').style.display =
+    guest.names.length > 1 ? '' : 'none';
+  guest.names.forEach(function (name, i) {
+    const row = document.createElement('div');
+    row.className = 'attendance-row';
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'attendance-row__name';
+    nameEl.textContent = name;
+
+    const options = document.createElement('div');
+    options.className = 'attendance-row__options';
+
+    ['yes', 'no'].forEach(function (val) {
+      const id = 'attend-' + i + '-' + val;
+      const label = document.createElement('label');
+      label.setAttribute('for', id);
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'attend-' + i;
+      radio.id = id;
+      radio.value = val;
+      radio.dataset.personName = name;
+
+      const span = document.createElement('span');
+      span.textContent = val === 'yes' ? 'Attending' : 'Unable to attend';
+
+      label.appendChild(radio);
+      label.appendChild(span);
+      options.appendChild(label);
+    });
+
+    row.appendChild(nameEl);
+    row.appendChild(options);
+    grid.appendChild(row);
+  });
+}
+
+function showRsvpStep(guest) {
+  currentGuest = guest;
+  guestKeyInput.value = guest.key;
+
+  /* Populate party summary */
+  invitedPartyNames.textContent = guest.names.join(' & ');
+  const noteEl = document.getElementById('invited-party-note');
+  if (noteEl) { noteEl.remove(); }
+  if (guest.note) {
+    const note = document.createElement('p');
+    note.id = 'invited-party-note';
+    note.style.cssText = 'font-size:0.82rem; color:var(--color-muted); margin:4px 0 0;';
+    note.textContent = guest.note;
+    document.getElementById('invited-party-box').appendChild(note);
+  }
+
+  buildAttendanceGrid(guest);
+
+  stepLookup.style.display = 'none';
+  stepRsvp.style.display = '';  
+  stepRsvp.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+lookupBtn.addEventListener('click', function () {
+  lookupError.textContent = '';
+  const raw = lookupInput.value.trim();
+  if (!raw) {
+    lookupError.textContent = 'Please enter your name.';
+    lookupInput.focus();
+    return;
+  }
+  const guest = findGuest(raw);
+  if (guest) {
+    showRsvpStep(guest);
+  } else {
+    lookupError.textContent =
+      'We couldn\'t find that name on our guest list. ' +
+      'Try your full name as it appears on your invitation, ' +
+      'or email us if you\'re having trouble.';
+    lookupInput.select();
+  }
+});
+
+lookupInput.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { lookupBtn.click(); }
+});
+
+/* "Not you?" — reset to lookup step */
+document.getElementById('wrong-guest-btn').addEventListener('click', function () {
+  currentGuest = null;
+  lookupInput.value = '';
+  lookupError.textContent = '';
+  stepRsvp.style.display = 'none';
+  stepLookup.style.display = '';
+  lookupInput.focus();
+});
+
+/* ============================================================
+   FORM SUBMISSION
+   Collects attendance per person, submits to Google Form.
+   ============================================================ */
+document.getElementById('rsvp-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const live = document.getElementById('form-live');
+  live.textContent = '';
+
+  /* Gather attendance decisions */
+  const attending = [];
+  const declining = [];
+
+  let allAnswered = true;
+
+  currentGuest.names.forEach(function (name, i) {
+    const selected = document.querySelector('input[name="attend-' + i + '"]:checked');
+    if (!selected) {
+      allAnswered = false;
+    } else if (selected.value === 'yes') {
+      attending.push(name);
+    } else {
+      declining.push(name);
+    }
+  });
+
+  if (!allAnswered) {
+    live.textContent = 'Please select an attendance option for each person.';
+    attendanceGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const dietary = document.getElementById('dietary').value.trim();
+  const email = document.getElementById('primary-email').value.trim();
+  const song    = document.getElementById('song').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  /*
+    Submit to Google Forms via a hidden iframe (no-redirect technique).
+    This avoids navigating away from the page.
+
+    If GOOGLE_FORM_ACTION still contains 'PASTE_YOUR_FORM_ID_HERE',
+    we skip the actual submission and just show the confirmation —
+    useful during development before the form is wired up.
+  */
+  const formData = new URLSearchParams();
+  formData.append(FORM_FIELDS.guestKey,  guestKeyInput.value);
+  formData.append(FORM_FIELDS.attending, attending.join(', ') || 'None');
+  formData.append(FORM_FIELDS.declining, declining.join(', ') || 'None');
+  formData.append(FORM_FIELDS.email,     email || 'None');
+  formData.append(FORM_FIELDS.dietary,   dietary || 'None');
+  formData.append(FORM_FIELDS.song,      song    || '');
+  formData.append(FORM_FIELDS.message,   message || '');
+
+  const submitBtn = document.getElementById('rsvp-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending…';
+
+  if (!GOOGLE_FORM_ACTION.includes('PASTE_YOUR_FORM_ID_HERE')) {
+    /* Real submission: post to Google Forms via hidden iframe */
+    let iframe = document.getElementById('gform-iframe');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id = 'gform-iframe';
+      iframe.name = 'gform-iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+
+    const hiddenForm = document.createElement('form');
+    hiddenForm.method = 'POST';
+    hiddenForm.action = GOOGLE_FORM_ACTION;
+    hiddenForm.target = 'gform-iframe';
+    hiddenForm.style.display = 'none';
+
+    for (const [k, v] of formData.entries()) {
+      const field = document.createElement('input');
+      field.type  = 'hidden';
+      field.name  = k;
+      field.value = v;
+      hiddenForm.appendChild(field);
+    }
+
+    document.body.appendChild(hiddenForm);
+    hiddenForm.submit();
+    document.body.removeChild(hiddenForm);
+
+    /* Google Forms doesn't send a success callback — we assume success
+       after a short delay. Instruct guests to email if they have issues. */
+    setTimeout(showConfirmation, 1200);
+
+  } else {
+    /* Dev mode: no real form wired yet — simulate success after a brief delay */
+    setTimeout(showConfirmation, 600);
+  }
+
+  function showConfirmation() {
+    stepRsvp.style.display = 'none';
+
+    const confirmMsg = document.getElementById('confirm-message');
+    if (attending.length > 0 && declining.length === 0) {
+      confirmMsg.textContent =
+        'We\'re so excited to celebrate with ' +
+        (attending.length === 1 ? 'you' : attending.join(' & ')) + '! ' +
+        'We\'ll be in touch with final details closer to the time.';
+    } else if (attending.length === 0) {
+      confirmMsg.textContent =
+        'We\'re sorry you won\'t be able to make it — ' +
+        'we\'ll be thinking of you. Thank you for letting us know.';
+    } else {
+      confirmMsg.textContent =
+        'Thank you! We\'re looking forward to celebrating with ' +
+        attending.join(' & ') + '. ' +
+        'We\'ll miss ' + declining.join(' & ') + '.';
+    }
+
+    document.getElementById('step-confirm').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+</script>
+
 </body>
 </html>

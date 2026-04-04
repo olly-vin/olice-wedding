@@ -1,152 +1,354 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Wedding of Alice Hutchinson-Keip and Oliver Vincent</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Join us for the wedding of Alice Hutchinson-Keip and Oliver Vincent. Schedule, venue, travel, registry, and RSVP.">
-    <link rel="canonical" href="https://your-domain.example/">
-    <link rel="icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta property="og:title" content="Wedding of Alice Hutchinson-Keip and Oliver Vincent">
-    <meta property="og:description" content="Schedule, venue details, registry, and RSVP.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-domain.example/">
-    <meta property="og:image" content="https://your-domain.example/og-image.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Wedding of Alice Hutchinson-Keip and Oliver Vincent">
-    <meta name="twitter:description" content="Schedule, venue details, registry, and RSVP.">
-    <meta name="twitter:image" content="https://your-domain.example/og-image.jpg">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; form-action 'self' https:; upgrade-insecure-requests">
-    <link rel="stylesheet" href="styles.css">
-    <script>// Mobile nav toggle (no inline handlers; accessible)
-    document.addEventListener('DOMContentLoaded',function(){
-      const btn=document.getElementById('nav-toggle');
-      const nav=document.getElementById('site-nav');
-      btn?.addEventListener('click',()=>{
-        const open=nav.classList.toggle('nav--open');
-        btn.setAttribute('aria-expanded', String(open));
-      });
-    });</script>
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Event",
-          "name": "Wedding of Alice Hutchinson-Keip and Oliver Vincent",
-          "startDate": "2027-04-03T15:00:00-05:00",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus": "https://schema.org/EventScheduled",
-          "location": {
-            "@type": "Place",
-            "name": "Riverfront Hall",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "123 Riverside Ave",
-              "addressLocality": "Austin",
-              "addressRegion": "TX",
-              "postalCode": "78701",
-              "addressCountry": "US"
-            }
-          },
-          "image": ["https://your-domain.example/og-image.jpg"],
-          "description": "Wedding celebration of Alice Hutchinson-Keip and Oliver Vincent with ceremony and reception.",
-          "organizer": {"@type":"Person","name":"Alice Hutchinson-Keip and Oliver Vincent"},
-          "url": "https://your-domain.example/"
-        }
-    </script>
+  <meta charset="utf-8">
+  <title>Alice & Oliver · April 2027</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="You're invited to the wedding of Alice Hutchinson-Keip and Oliver Vincent, Prince Albert, Karoo.">
+
+  <!--
+    OG / Twitter cards — update these once you have a real domain and hero image
+    Replace: https://olly-vin.github.io/wedding-tings
+  -->
+  <meta property="og:title" content="Alice & Oliver · April 2027">
+  <meta property="og:description" content="You're invited. Prince Albert, Karoo.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://olly-vin.github.io/wedding-tings/">
+  <meta property="og:image" content="https://olly-vin.github.io/wedding-tings/images/og-image.jpg">
+  <!-- NOTE: images/og-image.jpg — add a 1200×630 crop of your hero photo -->
+
+  <!--
+    CSP: google-forms iframe on rsvp.html needs docs.google.com allowed.
+    index.html has no iframes so this policy stays strict.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             base-uri 'self';
+             form-action 'self';
+             upgrade-insecure-requests">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    Schema.org event markup — update location, startDate, and URL before going live
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Wedding of Alice Hutchinson-Keip and Oliver Vincent",
+    "startDate": "2027-03-04T15:00:00+02:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "Place",
+      "name": "Prince Albert",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Prince Albert",
+        "addressRegion": "Western Cape",
+        "addressCountry": "ZA"
+      }
+    },
+    "description": "Wedding celebration of Alice Hutchinson-Keip and Oliver Vincent in Prince Albert, Karoo.",
+    "organizer": { "@type": "Person", "name": "Alice Hutchinson-Keip and Oliver Vincent" },
+    "url": "https://olly-vin.github.io/wedding-tings/"
+  }
+  </script>
 </head>
 <body>
-    <a class="visually-hidden" href="#main">Skip to content</a>
-    <!-- FLOATING NAV -->
-    <header class="floating-nav">
 
-    <div class="floating-nav__inner">
+<!-- =====================================================
+     PASSWORD GATE
+     =====================================================
+     This overlay sits on top of the entire page.
+     It is removed once the correct password is entered
+     and the session token is written to sessionStorage.
 
-        <div class="floating-nav__brand script">
-        Alice & Oliver
-        </div>
+     SECURITY NOTE: This is client-side gating only —
+     the password is visible in source code. This is
+     appropriate for a personal wedding site. Do not
+     store sensitive personal data behind this gate.
 
-        <nav class="floating-nav__links">
-        <a href="index.html">Home</a>
-        <a href="story.html">Story</a>
-        <a href="details.html">Details</a>
-        <a href="rsvp.html">RSVP</a>
-        </nav>
+     TO CHANGE THE PASSWORD:
+     Find SITE_PASSWORD below and update the string.
+     ===================================================== -->
+<div id="gate" class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="gate__box">
 
+    <span class="gate__title script" id="gate-title">Alice & Oliver</span>
+    <p class="gate__subtitle">April 2027 · Prince Albert, Karoo</p>
+    <p class="gate__subtitle">Please enter the invitation code to continue.</p>
+
+    <div class="gate__input-wrap">
+      <input
+        id="gate-password"
+        class="gate__input"
+        type="password"
+        placeholder="Invitation code"
+        autocomplete="off"
+        aria-label="Invitation code"
+        aria-describedby="gate-error"
+      >
     </div>
 
-    </header>
+    <p id="gate-error" class="gate__error" aria-live="polite"></p>
 
-    <main>
+    <button id="gate-submit" class="btn gate__btn">Enter</button>
+
+  </div>
+</div>
+<!-- END GATE -->
+
+<a class="visually-hidden" href="#main">Skip to content</a>
+
+<!-- FLOATING NAV -->
+<header class="floating-nav" id="main-nav">
+  <div class="floating-nav__inner">
+    <span class="floating-nav__brand script">Alice & Oliver</span>
+    <nav class="floating-nav__links" aria-label="Primary">
+      <a href="index.html" class="active">Home</a>
+      <a href="our-story.html">Story</a>
+      <a href="details.html">Details</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="rsvp.html">RSVP</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
 
   <!-- HERO -->
   <section class="hero">
-  <div class="hero__content">
-    <h2 class="script">We’re getting married</h2>
-    <h1 class="names">Alice & Oliver</h1>
-    <p>April 4th, 2027 · Prince Albert, Karoo</p>
-    <a href="rsvp.html" class="link">RSVP</a>
-  </div>
-</section>
+    <!--
+      PHOTO — hero.jpg
+      Full-bleed landscape engagement photo.
+      Recommended: wide shot, landscape orientation, min 2400×1600px.
+      Compress to ≤300KB using https://squoosh.app before committing.
+      The background-color (--color-primary) shows while the image loads.
+    -->
+    <div class="hero__content">
+      <h2 class="script" style="font-size:1.4rem; letter-spacing:0.1em; margin-bottom:8px;">
+        You're invited
+      </h2>
+      <span class="names script">Alice & Oliver</span>
+      <p style="font-size:0.95rem; letter-spacing:0.1em; margin-top:0;">
+        April 4th, 2027 &middot; Prince Albert, Karoo
+      </p>
+      <a href="rsvp.html" class="btn" style="margin-top:24px;">RSVP</a>
+      <span class="hero__scroll-cue" aria-hidden="true">↓</span>
+    </div>
+  </section>
 
   <!-- INTRO -->
   <section class="section">
     <div class="text-center">
-      <h2>We’re getting married</h2>
+      <h2>A weekend in the Karoo</h2>
       <p>
-        We would love for you to join us for a weekend
-        filled with good food, soft sunsets, and all our favourite people.
+        We would love for you to join us for a weekend filled with good food,
+        warm evenings, and all our favourite people.
       </p>
     </div>
   </section>
 
-  <section class="section">
-  <div class="text-center">
-    <h2>A weekend in the Karoo</h2>
-    <p>
-      A few slow days filled with
-      good food, warm evenings, and celebration.
-    </p>
-  </div>
-</section>
+  <!-- KEY INFO STRIP -->
+  <section class="section" style="padding-top:0;">
+    <div class="three-col">
+      <div class="three-col__item">
+        <span class="three-col__label">Date</span>
+        <span class="three-col__value">3 April 2027</span>
+      </div>
+      <div class="three-col__item">
+        <span class="three-col__label">Venue</span>
+        <span class="three-col__value">Prince Albert, Karoo</span>
+        <!--
+          TODO: Replace "Prince Albert, Karoo" with the exact venue name
+          once confirmed. Update details.html to match.
+        -->
+      </div>
+      <div class="three-col__item">
+        <span class="three-col__label">Dress</span>
+        <span class="three-col__value">Smart casual</span>
+        <!--
+          TODO: Update dress code once decided.
+        -->
+      </div>
+    </div>
+  </section>
 
-  <!-- STORY TEASER -->
+  <!-- TEASER PANELS — 2 col -->
   <section class="section">
-  <div class="text-center">
-    <h2>Our Story</h2>
-    <a href="story.html" class="link">Read more</a>
-  </div>
-</section>
+    <div class="two-col">
 
-  <!-- RSVP GATE PROMPT -->
-  <section class="section">
+      <div>
+        <!--
+          PHOTO — images/teaser-story.jpg
+          A portrait-orientation casual/candid couple photo.
+          Recommended: 800×1000px, warm tones.
+          Replace the .img-placeholder div with an <img> tag when ready:
+          <img src="images/teaser-story.jpg" alt="Alice and Oliver" style="width:100%;">
+        -->
+        <div class="img-wrapper img-wrapper--portrait" aria-label="[REPLACE: casual couple portrait — links to Our Story page]">
+          <img src="images/al_ol_mzb1.jpg" alt="Alice and Oliver" style="width:100%;"></div>
+      </div>
+
+      <div style="text-align:center; padding: 0 var(--space-2);">
+        <h2>Our Story</h2>
+        <p>How we got here — from the very beginning.</p>
+        <a href="our-story.html" class="btn btn--outline">Read our story</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="two-col">
+
+      <div style="text-align:center; padding: 0 var(--space-2);">
+        <h2>The Details</h2>
+        <p>Schedule, travel, accommodation — everything you need for the weekend.</p>
+        <a href="details.html" class="btn btn--outline">View details</a>
+      </div>
+
+      <div>
+        <!--
+          PHOTO — images/teaser-venue.jpg
+          Exterior or landscape shot of Prince Albert / the venue.
+          Recommended: 800×1000px, golden-hour tones if possible.
+          Replace the .img-placeholder div with an <img> tag when ready:
+          <img src="images/teaser-venue.jpg" alt="Prince Albert, Karoo" style="width:100%;">
+        -->
+        <div class="image-wrapper image-wrapper--portrait" aria-label="[REPLACE: venue exterior or Prince Albert landscape photo — links to Details page]">
+          <img src="images/Prince-Albert.jpg" alt="Prince Albert landscape" style="width:100%;">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RSVP CTA -->
+  <section class="section text-center">
     <div class="text-center">
-      <h2>The Weekend</h2>
-        <p>
-        Explore the full schedule, travel notes, and accommodation options.
-        </p>
-
-        <a href="details.html" class="link">View Details</a>
+      <h2>Please RSVP</h2>
+      <p>
+        Let us know by <strong>1 September 2026</strong> so we can plan the
+        perfect weekend.
+        <!--
+          TODO: Confirm RSVP deadline and update this date.
+        -->
+      </p>
+      <a href="rsvp.html" class="btn">RSVP now</a>
     </div>
   </section>
 
 </main>
 
-    <footer class="footer">
-        <div class="container footer__inner">
-            <p>� 2026 Alice Hutchinson-Keip and Oliver Vincent � <a href="mailto:hello@example.com?subject=Wedding">Contact us</a></p>
-        </div>
-    </footer>
-    <script>
-    document.addEventListener("scroll", function () {
-        const nav = document.querySelector(".floating-nav");
+<footer class="footer">
+  <p>
+    &copy; 2027 Alice Hutchinson-Keip &amp; Oliver Vincent
+    &nbsp;&middot;&nbsp;
+    <a href="mailto:olicevincent@gmail.com">Contact us</a>
+    <!--
+      TODO: Replace with your real shared email address before going live.
+    -->
+  </p>
+</footer>
 
-        if (window.scrollY > 50) {
-        nav.classList.add("scrolled");
-        } else {
-        nav.classList.remove("scrolled");
-        }
-    });
-    </script>
+<script>
+/*
+  ============================================================
+  GATE LOGIC
+  ============================================================
+  HOW IT WORKS:
+  1. On page load, check sessionStorage for 'wt_auth'.
+     If found, skip the gate immediately (user already entered
+     the correct code this browser session).
+  2. On submit, compare input against SITE_PASSWORD.
+     If correct → store token, fade out gate.
+     If wrong   → show error, clear input.
+
+  TO CHANGE THE PASSWORD:
+  Update the SITE_PASSWORD string below.
+  The password is case-insensitive (converted to lowercase).
+
+  SESSION vs LOCAL STORAGE:
+  sessionStorage is used intentionally — the gate reappears
+  if the guest opens a new browser session (new tab after
+  closing browser). Use localStorage if you prefer it to
+  persist across sessions.
+  ============================================================
+*/
+
+(function () {
+  const SITE_PASSWORD = 'karoo2027';
+  /* ↑ CHANGE THIS — share this code with your guests via invite */
+
+  const gate        = document.getElementById('gate');
+  const input       = document.getElementById('gate-password');
+  const submitBtn   = document.getElementById('gate-submit');
+  const errorEl     = document.getElementById('gate-error');
+
+  function unlock() {
+    sessionStorage.setItem('wt_auth', '1');
+    gate.classList.add('gate--hidden');
+    setTimeout(function () { gate.style.display = 'none'; }, 520);
+  }
+
+  /* Already authenticated this session — skip gate */
+  if (sessionStorage.getItem('wt_auth') === '1') {
+    gate.style.display = 'none';
+    return;
+  }
+
+  /* Focus the password input when gate is shown */
+  input.focus();
+
+  function attempt() {
+    const val = input.value.trim().toLowerCase();
+    errorEl.textContent = '';
+    input.classList.remove('gate__input--error');
+
+    if (!val) {
+      input.classList.add('gate__input--error');
+      errorEl.textContent = 'Please enter the invitation code.';
+      return;
+    }
+
+    if (val === SITE_PASSWORD) {
+      submitBtn.disabled = true;
+      unlock();
+    } else {
+      input.classList.add('gate__input--error');
+      input.value = '';
+      input.focus();
+      errorEl.textContent = 'That code doesn\'t match. Check your invitation and try again.';
+    }
+  }
+
+  submitBtn.addEventListener('click', attempt);
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { attempt(); }
+  });
+}());
+
+/*
+  ============================================================
+  SCROLL NAV
+  ============================================================
+*/
+document.addEventListener('scroll', function () {
+  const nav = document.querySelector('.floating-nav');
+  if (window.scrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+</script>
+
 </body>
 </html>
