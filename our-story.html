@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Our Story · Alice & Oliver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Our story — how it all began.">
+
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             base-uri 'self';
+             form-action 'self';
+             upgrade-insecure-requests">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<a class="visually-hidden" href="#main">Skip to content</a>
+
+<!-- AUTH GUARD -->
+<script>
+  if (sessionStorage.getItem('wt_auth') !== '1') {
+    window.location.replace('index.html');
+  }
+</script>
+
+<!-- NAV -->
+<header class="floating-nav floating-nav--dark">
+  <div class="floating-nav__inner">
+    <a href="index.html" class="floating-nav__brand script">Alice & Oliver</a>
+    <nav class="floating-nav__links">
+      <a href="index.html">Home</a>
+      <a href="our-story.html" class="active">Story</a>
+      <a href="details.html">Details</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="rsvp.html">RSVP</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HEADER -->
+  <section class="section text-center" style="padding-top: 140px;">
+  <p class="body" style="font-size:1.8rem; margin-bottom:8px;">Our Story</p>
+  <h1 class="script" style="margin-bottom: 8px;">Alice &amp; Oliver</h1>
+</section>
+
+  <!-- INTRO IMAGE -->
+  <section style="padding: 0 var(--space-2) var(--space-4);">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div class="image-wrapper image-wrapper--portrait">
+        <img src="images/al_ol_cmp_202501.2.JPG" alt="Alice and Oliver together">
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 1 -->
+  <section class="section">
+    <div class="two-col">
+
+      <div>
+        <div class="image-wrapper image-wrapper--portrait">
+          <img src="images/Screenshot 2026-03-28 at 17.15.45.png" alt="Early days">
+        </div>
+      </div>
+
+      <div>
+        <h2>How we met</h2>
+        <p>
+          <!-- WRITE YOUR STORY HERE -->
+          We met in a way that now feels inevitable...
+        </p>
+        <p>
+          What started as something small slowly became everything.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CHAPTER 2 -->
+  <section class="section">
+    <div class="two-col">
+
+      <div>
+        <h2>Falling in love</h2>
+        <p>
+          Somewhere between the ordinary days and the unforgettable ones,
+          we realised this was something special.
+        </p>
+      </div>
+
+      <div>
+        <div class="image-wrapper image-wrapper--portrait">
+          <img src="images/al_ol_ptgl.jpeg" alt="Travelling together">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FULL WIDTH MOMENT -->
+  <section class="section" style="padding-top:0;">
+    <div style="max-width:900px; margin:0 auto;">
+      <div class="image-wrapper image-wrapper--wide">
+        <img src="images/al_ol_vds_wed1.jpg" alt="Engagement moment">
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 3 -->
+  <section class="section text-center">
+    <div class="text-center">
+      <h2>The next chapter</h2>
+      <p>
+        And now, we can’t wait to celebrate this next chapter with all of you.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section text-center">
+    <h2>Join us</h2>
+    <p>We would love for you to be part of it.</p>
+    <a href="details.html" class="btn">View wedding details</a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>
+    &copy; 2027 Alice Hutchinson-Keip &amp; Oliver Vincent
+    &middot;
+    <a href="mailto:olicevincent@gmail.com">Contact us</a>
+  </p>
+</footer>
+
+<script>
+  document.addEventListener('scroll', function () {
+    const nav = document.querySelector('.floating-nav');
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  });
+</script>
+
+</body>
+</html>
