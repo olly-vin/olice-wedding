@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>RSVP · Alice & Oliver</title>
+  <title>RSVP · Alice &amp; Oliver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="RSVP to the wedding of Alice Hutchinson-Keip and Oliver Vincent.">
 
@@ -42,7 +42,7 @@
 <!-- FLOATING NAV — dark variant: no hero image on this page -->
 <header class="floating-nav floating-nav--dark" id="main-nav">
   <div class="floating-nav__inner">
-    <a href="index.html" class="floating-nav__brand script">Alice & Oliver</a>
+    <a href="index.html" class="floating-nav__brand script">Alice &amp; Oliver</a>
     <nav class="floating-nav__links" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="our-story.html">Story</a>
@@ -56,7 +56,7 @@
 <main id="main">
 
   <section class="section text-center" style="padding-top: 140px;">
-    <p class="body" style="font-size:1.8rem; margin-bottom:8px;">RSVP</p>
+    <p class="body" style="font-size:1.8rem; margin-bottom:8px; color: #252610;">RSVP</p>
     <h1 class = "script" style="margin-bottom: 8px;">Alice &amp; Oliver</h1>
     <p style="color: var(--color-muted); font-size: 0.9rem; letter-spacing: 0.06em;">
       Please respond by <strong>1 September 2026</strong>
@@ -145,23 +145,6 @@
             <p class="helper">We'll send your confirmation here. Not shared with anyone else.</p>
           </div>
 
-          <!-- Plus-one email — only shown if invite has 2+ people -->
-          <div class="form__group" id="plusone-email-group" style="display:none;">
-            <label for="plusone-email" class="label">
-              Plus-one email
-              <span style="font-size:0.75rem; text-transform:none; letter-spacing:0; font-weight:normal;">(optional)</span>
-            </label>
-            <input
-              id="plusone-email"
-              name="plusone_email"
-              class="input"
-              type="email"
-              autocomplete="off"
-              placeholder="their@email.com"
-            >
-            <p class="helper">If they're attending, we'll send them a confirmation too.</p>
-          </div>
-
           <!-- Dietary requirements -->
           <div class="form__group">
             <label for="dietary" class="label">Dietary requirements</label>
@@ -173,7 +156,7 @@
               placeholder="Vegetarian, gluten-free, nut allergy, etc."
               autocomplete="off"
             >
-            <p class="helper">List all dietary needs across your party — we'll ensure the caterers know.</p>
+            <p class="helper">List all dietary needs — we'll ensure the caterers know. Leave blank if none.</p>
           </div>
 
           <!-- Song request -->
@@ -215,7 +198,7 @@
       <!-- END STEP 2 -->
 
       <!-- STEP 3: Confirmation — shown after successful submit -->
-      <div id="step-confirm" class="form-confirmation">
+      <div id="step-confirm" class="form-confirmation" style="display:none;">
         <div class="form-confirmation__icon" aria-hidden="true">✓</div>
         <h2 style="font-weight:normal;">Thank you!</h2>
         <p id="confirm-message"></p>
@@ -225,7 +208,19 @@
             TODO: Replace with your real email address. --Done
           -->
         </p>
-        <a href="details.html" class="btn" style="margin-top: var(--space-3);">View weekend details</a>
+        <!--
+          PARTNER NUDGE
+          Shown only when the submitter's invitation includes other people.
+          Wording is soft — covers both "hasn't RSVPd yet" and "already has".
+        -->
+        <div id="partner-nudge" style="display:none; margin-top: var(--space-3); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-radius: 2px; text-align: left;">
+          <p id="partner-nudge-text" style="font-size:0.9rem; color: var(--color-text); margin-bottom: var(--space-2);"></p>
+          <button id="partner-rsvp-btn" class="btn" style="width:100%;">
+            <!-- Button label set dynamically -->
+          </button>
+        </div>
+
+        <a href="details.html" class="btn btn--outline" style="margin-top: var(--space-2); display:inline-block;">View weekend details</a>
       </div>
       <!-- END STEP 3 -->
 
@@ -288,14 +283,22 @@
   HOW TO EDIT:
   Each entry in GUEST_LIST is one invitation unit (one envelope).
 
-  Key:      The primary guest's name, LOWERCASE, spaces normalised.
-            This is what guests type during lookup.
+  Key:      Any one person's name from this invitation, LOWERCASE,
+            spaces normalised. You only need ONE key per invitation
+            group — the lookup logic automatically searches every
+            name inside each party's names array, so any person on
+            the invite can find their own RSVP by typing their name.
+
+            Convention: use the primary invitee's name as the key.
+            The key is also used as a fallback label in the Sheet.
 
   Value object:
     names:  Array of everyone on this invitation.
-            First entry = primary invitee.
-            Second entry = plus-one (if applicable).
-            Names appear exactly as written on screen.
+            Each person in this array should be able to look
+            themselves up and submit their own individual RSVP.
+            Add a matching GUEST_LIST entry for each person if you
+            want exact-key lookup (fastest), or rely on the
+            names-array scan (automatic, no extra entries needed).
 
     note:   Optional short note shown under the party summary.
             E.g. "Evening only" or "Accommodation confirmed".
@@ -303,8 +306,14 @@
 
   ADDING A GUEST:
     Add a new entry following the pattern below.
-    The key must be unique (two guests with the same name →
+    The key must be unique (two guests with the same full name →
     use a middle name or initial: "james a smith").
+
+  PLUS-ONES:
+    Include the plus-one's name in the names array if known.
+    If unknown: names: ['Priya Patel', 'Priya\'s plus-one']
+    The confirmation screen will prompt each person to RSVP
+    individually — no need to duplicate the entry.
 
   REMOVING A GUEST:
     Delete their entry. The lookup will return "not found".
@@ -330,22 +339,22 @@ const GUEST_LIST = {
   },
   'mike loughran': {
     names: ['Mike Loughran'],
-    note: 'Groom'
+    note: ''
   },
   'amy wardle': {
-    names: ['Amy Wardle', 'Bear and Bambi'],
+    names: ['Amy Wardle', 'Luke Wardle'],
     note: 'Bridesmaid'
   },
   'luke wardle': {
-    names: ['luke wardle'],
-    note: 'Friend'
+    names: ['Luke Wardle', 'Amy Wardle'],
+    note: ''
   },
   'robert hutchinson-keip': {
     names: ['Robert Hutchinson-Keip'],
     note: 'Father of the Bride'
   },
   'holly hutchinson-keip': {
-    names: ['Holly Hutchinson-Keip'],
+    names: ['Holly Hutchinson-Keip', 'Robert Hutchinson-Keip'],
     note: 'Mother of the Bride'
   },
   /* Couple invitation — both names listed */
@@ -429,6 +438,12 @@ const GUEST_LIST = {
   4. Test: submit the form on the site and check your Google Sheet.
 
   ============================================================
+  Each individual submits their own row. The guest_key field
+  contains the submitter's own matched name (e.g. "Michael Jones"),
+  not the party key. The Apps Script deduplicates on this value,
+  so re-submissions overwrite rather than append.
+  Form action and entry IDs are confirmed working — do not change
+  unless you recreate the Google Form.
 */
 const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/formResponse';
 
@@ -437,13 +452,13 @@ const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-k
   Replace entry.XXXXXXXX with your real IDs from the prefill URL.
 */
 const FORM_FIELDS = {
-  guestKey:      'entry.102251949',  /* TODO: replace with real entry ID */
-  attending:     'entry.915626348',  /* TODO: replace with real entry ID */
-  declining:     'entry.298352296',  /* TODO: replace with real entry ID */
-  email:         'entry.1784969038',  /* TODO: replace with real entry ID */
-  dietary:       'entry.1814084214',  /* TODO: replace with real entry ID */
-  song:          'entry.1670549511',  /* TODO: replace with real entry ID */
-  message:       'entry.366955240',  /* TODO: replace with real entry ID */
+  guestKey:      'entry.102251949',  
+  attending:     'entry.915626348',  
+  declining:     'entry.298352296',  
+  email:         'entry.1784969038',  
+  dietary:       'entry.1814084214',  
+  song:          'entry.1670549511',  
+  message:       'entry.366955240',  
 };
 
 /* ============================================================
@@ -463,80 +478,118 @@ const attendanceGrid    = document.getElementById('attendance-grid');
 const invitedPartyNames = document.getElementById('invited-party-names');
 const guestKeyInput     = document.getElementById('guest-key');
 
-let currentGuest = null; /* The matched GUEST_LIST entry */
+let currentGuest  = null; /* The matched GUEST_LIST entry */
+let submitterName = null; /* The exact name matched from the names array */
 
+/* ============================================================
+   LOOKUP LOGIC
+   ============================================================
+   Priority order:
+   1. Exact key match against GUEST_LIST keys (fastest path)
+   2. Scan every party's names array for a full-name match
+   3. Fuzzy fallback: first or last word of any key
+      (only returns if unambiguous — exactly one match)
+   ============================================================ */
 function normaliseName(str) {
   return str.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
 function findGuest(rawInput) {
   const key = normaliseName(rawInput);
+
+  /* 1. Exact key match */
   if (GUEST_LIST[key]) {
-    return { key: key, ...GUEST_LIST[key] };
+    return {
+      key: key,
+      matchedName: GUEST_LIST[key].names[0],
+      ...GUEST_LIST[key]
+    };
   }
-  /* Fuzzy fallback: check if input appears as a first or last word of any key */
+
+  /* 2. Scan all names arrays for a full-name match */
   for (const [k, v] of Object.entries(GUEST_LIST)) {
-    if (k.includes(key) || key.includes(k.split(' ')[0])) {
-      /* Only return if it's an unambiguous partial match (first name only) */
-      const parts = k.split(' ');
-      if (key === parts[0] || key === parts[parts.length - 1]) {
-        return { key: k, ...v };
+    for (const name of v.names) {
+      if (normaliseName(name) === key) {
+								 
+																
+        return {
+          key: k,
+          matchedName: name,
+          ...v
+        };
       }
     }
   }
+
+  /* 3. Fuzzy fallback: first or last word of any key — only if unambiguous */
+  const fuzzyMatches = [];
+  for (const [k, v] of Object.entries(GUEST_LIST)) {
+    const parts = k.split(' ');
+    if (key === parts[0] || key === parts[parts.length - 1]) {
+      fuzzyMatches.push({ key: k, matchedName: v.names[0], ...v });
+    }
+  }
+  if (fuzzyMatches.length === 1) {
+    return fuzzyMatches[0];
+  }
+
   return null;
 }
-
-function buildAttendanceGrid(guest) {
+/* ============================================================
+   BUILD SINGLE ATTENDANCE ROW
+   ============================================================ */
+function buildAttendanceGrid(matchedName) {
   const grid = document.getElementById('attendance-grid');
   grid.innerHTML = '';
 
-  /* Show plus-one email only if there are 2+ people on the invite */
-  document.getElementById('plusone-email-group').style.display =
-    guest.names.length > 1 ? '' : 'none';
-  guest.names.forEach(function (name, i) {
     const row = document.createElement('div');
-    row.className = 'attendance-row';
+  row.className = 'attendance-row';
 
-    const nameEl = document.createElement('span');
-    nameEl.className = 'attendance-row__name';
-    nameEl.textContent = name;
+  const nameEl = document.createElement('span');
+  nameEl.className = 'attendance-row__name';
+  nameEl.textContent = matchedName;
 
-    const options = document.createElement('div');
-    options.className = 'attendance-row__options';
+  const options = document.createElement('div');
+  options.className = 'attendance-row__options';
 
-    ['yes', 'no'].forEach(function (val) {
-      const id = 'attend-' + i + '-' + val;
-      const label = document.createElement('label');
-      label.setAttribute('for', id);
+  ['yes', 'no'].forEach(function (val) {
+    const id = 'attend-0-' + val;
+    const label = document.createElement('label');
+    label.setAttribute('for', id);
 
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'attend-' + i;
-      radio.id = id;
-      radio.value = val;
-      radio.dataset.personName = name;
+    const radio = document.createElement('input');
+    radio.type  = 'radio';
+    radio.name  = 'attend-0';
+    radio.id    = id;
+    radio.value = val;
+    radio.dataset.personName = matchedName;
 
-      const span = document.createElement('span');
-      span.textContent = val === 'yes' ? 'Attending' : 'Unable to attend';
+    const span = document.createElement('span');
+    span.textContent = val === 'yes' ? 'Attending' : 'Unable to attend';
 
-      label.appendChild(radio);
-      label.appendChild(span);
-      options.appendChild(label);
-    });
-
-    row.appendChild(nameEl);
-    row.appendChild(options);
-    grid.appendChild(row);
+    label.appendChild(radio);
+    label.appendChild(span);
+    options.appendChild(label);
   });
+
+  row.appendChild(nameEl);
+  row.appendChild(options);
+  grid.appendChild(row);
 }
-
+/* ============================================================
+   SHOW STEP 2
+   ============================================================ */
 function showRsvpStep(guest) {
-  currentGuest = guest;
-  guestKeyInput.value = guest.key;
+  currentGuest  = guest;
+  submitterName = guest.matchedName;
 
-  /* Populate party summary */
+  /* Set the hidden guest-key field to the individual's matched name,
+     not the party key. The Sheet deduplicates on this value. */
+  guestKeyInput.value = submitterName;
+
+  /* Party summary — shows all names on the invitation */
   invitedPartyNames.textContent = guest.names.join(' & ');
+
   const noteEl = document.getElementById('invited-party-note');
   if (noteEl) { noteEl.remove(); }
   if (guest.note) {
@@ -547,13 +600,16 @@ function showRsvpStep(guest) {
     document.getElementById('invited-party-box').appendChild(note);
   }
 
-  buildAttendanceGrid(guest);
+  buildAttendanceGrid(submitterName);
 
   stepLookup.style.display = 'none';
-  stepRsvp.style.display = '';  
+  stepRsvp.style.display   = 'block';
   stepRsvp.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+/* ============================================================
+   LOOKUP BUTTON
+   ============================================================ */
 lookupBtn.addEventListener('click', function () {
   lookupError.textContent = '';
   const raw = lookupInput.value.trim();
@@ -580,80 +636,85 @@ lookupInput.addEventListener('keydown', function (e) {
 
 /* "Not you?" — reset to lookup step */
 document.getElementById('wrong-guest-btn').addEventListener('click', function () {
-  currentGuest = null;
-  lookupInput.value = '';
+  currentGuest  = null;
+  submitterName = null;
+  lookupInput.value       = '';
   lookupError.textContent = '';
-  stepRsvp.style.display = 'none';
-  stepLookup.style.display = '';
+  stepRsvp.style.display  = 'none';
+  stepLookup.style.display = 'block';
   lookupInput.focus();
 });
 
 /* ============================================================
    FORM SUBMISSION
-   Collects attendance per person, submits to Google Form.
+   ============================================================
+   Collects the individual's attendance decision and submits
+   one row to Google Forms via the hidden iframe technique.
    ============================================================ */
 document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   e.preventDefault();
+  document.getElementById('form-live').textContent = '';
 
-  const live = document.getElementById('form-live');
-  live.textContent = '';
+													
+						
 
-  /* Gather attendance decisions */
-  const attending = [];
-  const declining = [];
-
-  let allAnswered = true;
-
-  currentGuest.names.forEach(function (name, i) {
-    const selected = document.querySelector('input[name="attend-' + i + '"]:checked');
-    if (!selected) {
-      allAnswered = false;
-    } else if (selected.value === 'yes') {
-      attending.push(name);
-    } else {
-      declining.push(name);
-    }
-  });
-
-  if (!allAnswered) {
-    live.textContent = 'Please select an attendance option for each person.';
+											 
+  const selected = document.querySelector('input[name="attend-0"]:checked');
+  if (!selected) {
+								  
+    document.getElementById('attendance-error').textContent = "Please let us know if you'll be attending.";
     attendanceGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
+		  
+								 
   }
+  document.getElementById('attendance-error').textContent = '';
+
+  const isAttending  = (selected.value === 'yes');
+
+								
+  const primaryEmail = document.getElementById('primary-email').value.trim();
+  if (!primaryEmail) {
+    document.getElementById('primary-email-error').textContent = 'Please enter your email address.';
+    document.getElementById('primary-email').focus();
+    return;
+		  
+								  
+  }
+  document.getElementById('primary-email-error').textContent = '';
 
   const dietary = document.getElementById('dietary').value.trim();
-  const email = document.getElementById('primary-email').value.trim();
   const song    = document.getElementById('song').value.trim();
   const message = document.getElementById('message').value.trim();
 
   /*
-    Submit to Google Forms via a hidden iframe (no-redirect technique).
-    This avoids navigating away from the page.
-
-    If GOOGLE_FORM_ACTION still contains 'PASTE_YOUR_FORM_ID_HERE',
-    we skip the actual submission and just show the confirmation —
-    useful during development before the form is wired up.
+    Build the form payload.
+    - guestKey:  the submitter's own matched name (e.g. "Michael Jones")
+    - attending: submitter's name if attending, else empty
+    - declining: submitter's name if declining, else empty
+    The Apps Script deduplicates rows keyed on guest_key (column B),
+    so re-submissions overwrite the previous row cleanly.
   */
   const formData = new URLSearchParams();
-  formData.append(FORM_FIELDS.guestKey,  guestKeyInput.value);
-  formData.append(FORM_FIELDS.attending, attending.join(', ') || 'None');
-  formData.append(FORM_FIELDS.declining, declining.join(', ') || 'None');
-  formData.append(FORM_FIELDS.email,     email || 'None');
+  formData.append(FORM_FIELDS.guestKey,  submitterName);
+  formData.append(FORM_FIELDS.attending, isAttending ? submitterName : 'None');
+  formData.append(FORM_FIELDS.declining, isAttending ? 'None' : submitterName);
+  formData.append(FORM_FIELDS.email,     primaryEmail);
   formData.append(FORM_FIELDS.dietary,   dietary || 'None');
   formData.append(FORM_FIELDS.song,      song    || '');
   formData.append(FORM_FIELDS.message,   message || '');
 
   const submitBtn = document.getElementById('rsvp-submit');
-  submitBtn.disabled = true;
+  submitBtn.disabled    = true;
   submitBtn.textContent = 'Sending…';
 
   if (!GOOGLE_FORM_ACTION.includes('PASTE_YOUR_FORM_ID_HERE')) {
-    /* Real submission: post to Google Forms via hidden iframe */
+    /* Real submission via hidden iframe */
     let iframe = document.getElementById('gform-iframe');
     if (!iframe) {
       iframe = document.createElement('iframe');
-      iframe.id = 'gform-iframe';
-      iframe.name = 'gform-iframe';
+      iframe.id    = 'gform-iframe';
+      iframe.name  = 'gform-iframe';
       iframe.style.display = 'none';
       document.body.appendChild(iframe);
     }
@@ -676,39 +737,93 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
     hiddenForm.submit();
     document.body.removeChild(hiddenForm);
 
-    /* Google Forms doesn't send a success callback — we assume success
-       after a short delay. Instruct guests to email if they have issues. */
-    setTimeout(showConfirmation, 1200);
+    /* Google Forms provides no success callback — assume success after delay */
+    setTimeout(function () { showConfirmation(isAttending); }, 1200);
 
   } else {
-    /* Dev mode: no real form wired yet — simulate success after a brief delay */
-    setTimeout(showConfirmation, 600);
-  }
-
-  function showConfirmation() {
-    stepRsvp.style.display = 'none';
-
-    const confirmMsg = document.getElementById('confirm-message');
-    if (attending.length > 0 && declining.length === 0) {
-      confirmMsg.textContent =
-        'We\'re so excited to celebrate with ' +
-        (attending.length === 1 ? 'you' : attending.join(' & ')) + '! ' +
-        'We\'ll be in touch with final details closer to the time.';
-    } else if (attending.length === 0) {
-      confirmMsg.textContent =
-        'We\'re sorry you won\'t be able to make it — ' +
-        'we\'ll be thinking of you. Thank you for letting us know.';
-    } else {
-      confirmMsg.textContent =
-        'Thank you! We\'re looking forward to celebrating with ' +
-        attending.join(' & ') + '. ' +
-        'We\'ll miss ' + declining.join(' & ') + '.';
-    }
-
-    document.getElementById('step-confirm').classList.add('visible');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    /* Dev mode: no form wired yet — simulate success */
+    setTimeout(function () { showConfirmation(isAttending); }, 600);
   }
 });
+
+/* ============================================================
+   CONFIRMATION + PARTNER NUDGE
+   ============================================================ */
+function showConfirmation(isAttending) {
+  stepRsvp.style.display    = 'none';
+  stepConfirm.style.display = 'block';
+
+  var firstName  = submitterName.split(' ')[0];
+  var confirmMsg = document.getElementById('confirm-message');
+  if (isAttending) {
+    confirmMsg.textContent =
+      "We're so excited to celebrate with you, " + firstName + "! " +
+      "We'll be in touch with final details closer to the time.";
+  } else {
+    confirmMsg.textContent =
+      "We're sorry you won't be able to make it, " + firstName + " \u2014 " +
+      "we'll be thinking of you. Thank you for letting us know.";
+  }
+
+									
+  var partners = currentGuest.names.filter(function (n) {
+    return normaliseName(n) !== normaliseName(submitterName);
+  });
+
+  var nudgeBlock = document.getElementById('partner-nudge');
+  var nudgeText  = document.getElementById('partner-nudge-text');
+  var partnerBtn = document.getElementById('partner-rsvp-btn');
+
+  if (partners.length > 0) {
+    var partnerList  = partners.join(' & ');
+    var partnerFirst = partners[0].split(' ')[0];
+
+    nudgeText.textContent =
+      "If " + partnerList + " hasn't already RSVPd, they can do so below \u2014 " +
+      "it'll simply update their response if they have.";
+
+    partnerBtn.textContent = 'RSVP for ' + partnerFirst;
+
+    /* Clone to remove any stale listeners from a previous submission */
+    var freshBtn = partnerBtn.cloneNode(true);
+    partnerBtn.parentNode.replaceChild(freshBtn, partnerBtn);
+
+    var partnerNameToLoad = partners[0];
+    freshBtn.addEventListener('click', function () {
+								
+      currentGuest  = null;
+      submitterName = null;
+      document.getElementById('rsvp-form').reset();
+      document.getElementById('attendance-error').textContent    = '';
+      document.getElementById('primary-email-error').textContent = '';
+      document.getElementById('form-live').textContent           = '';
+      var sb = document.getElementById('rsvp-submit');
+      sb.disabled    = false;
+      sb.textContent = 'Send RSVP';
+
+										  
+      stepConfirm.style.display = 'none';
+      stepLookup.style.display  = 'block';
+      lookupInput.value         = partnerNameToLoad;
+      lookupError.textContent   = '';
+
+								 
+									  
+								   
+
+							   
+      setTimeout(function () { lookupBtn.click(); }, 50);
+						  
+			 
+    });
+
+    nudgeBlock.style.display = '';
+  } else {
+    nudgeBlock.style.display = 'none';
+  }
+
+  stepConfirm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 </script>
 
 </body>
