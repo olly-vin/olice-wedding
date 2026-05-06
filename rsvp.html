@@ -8,8 +8,8 @@
 
   <!--
     CSP: Google Forms embed requires docs.google.com and forms.gle.
-    frame-src added to permit the iframe.
-    If you switch to a link-out button instead of embed, remove frame-src.
+    frame-src permits the hidden iframe POST.
+    connect-src permits the fetch() to the Apps Script Web App.
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
@@ -17,6 +17,7 @@
              style-src 'self' 'unsafe-inline';
              script-src 'self' 'unsafe-inline';
              frame-src https://docs.google.com;
+             connect-src https://script.google.com;
              base-uri 'self';
              form-action 'self' https://docs.google.com;
              upgrade-insecure-requests">
@@ -29,11 +30,11 @@
 
 <!--
   REDIRECT GUARD
-  If somehow a guest lands directly on rsvp.html without going through the
-  gate on index.html (e.g. shared link), redirect them.
-  This script runs immediately, before the page renders.
+  Runs before the page renders. Guests who arrive without a valid
+  sessionStorage token (i.e. haven't passed the index.html gate) are
+  bounced back immediately.
 -->
-<script>
+<script data-cfasync="false">
   if (sessionStorage.getItem('wt_auth') !== '1') {
     window.location.replace('index.html');
   }
@@ -57,7 +58,7 @@
 
   <section class="section text-center" style="padding-top: 140px;">
     <p class="body" style="font-size:1.8rem; margin-bottom:8px; color: #252610;">RSVP</p>
-    <h1 class = "script" style="margin-bottom: 8px;">Alice &amp; Oliver</h1>
+    <h1 class="script" style="margin-bottom: 8px;">Alice &amp; Oliver</h1>
     <p style="color: var(--color-muted); font-size: 0.9rem; letter-spacing: 0.06em;">
       Please respond by <strong>1 September 2026</strong>
       <!--
@@ -93,9 +94,6 @@
         <p style="text-align:center; margin-top: var(--space-2); font-size:0.82rem; color:var(--color-muted);">
           Can't find your name?
           <a href="mailto:olicevincent@gmail.com?subject=RSVP%20query" class="link">Email us</a>
-          <!--
-            TODO: Replace with your real email address. --Done
-          -->
         </p>
       </div>
       <!-- END STEP 1 -->
@@ -116,6 +114,22 @@
           <!-- Hidden field: primary guest name (set by lookup) -->
           <input type="hidden" id="guest-key" name="guest_key">
 
+          <!--
+            HONEYPOT FIELD
+            Hidden from real users via off-screen positioning.
+            Bots that fill all form fields will populate this.
+            The submit handler checks it and silently short-circuits
+            without posting to Google Forms if it has a value.
+          -->
+          <input
+            type="text"
+            name="website"
+            style="position:absolute; left:-9999px;"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          >
+
           <!-- Attendance per person -->
           <div class="form__group">
             <span class="label">Who will be attending?</span>
@@ -125,7 +139,7 @@
                 Each invited person gets one row with Yes / No radio buttons.
               -->
             </div>
-          <p id="attendance-error" class="error" aria-live="polite"></p>
+            <p id="attendance-error" class="error" aria-live="polite"></p>
           </div>
 
           <!-- Primary guest email -->
@@ -204,9 +218,6 @@
         <p id="confirm-message"></p>
         <p style="color: var(--color-muted); font-size: 0.9rem; margin-top: var(--space-2);">
           Questions or changes? <a href="mailto:olicevincent@gmail.com?subject=RSVP%20query" class="link">Email us</a>.
-          <!--
-            TODO: Replace with your real email address. --Done
-          -->
         </p>
         <!--
           PARTNER NUDGE
@@ -227,44 +238,6 @@
     </div>
   </section>
 
-  <!--
-    GOOGLE FORM FALLBACK
-    ============================================================
-    If you prefer a simple Google Form embed instead of the
-    custom lookup form above, uncomment this section and comment
-    out the form-wrap section above.
-
-    To get your embed URL:
-    1. Open your Google Form
-    2. Click Send → Embed (<>)
-    3. Copy the src URL from the iframe code
-    4. Paste it into the src attribute below
-
-    NOTE: Google Forms styling cannot be customised much.
-    The custom form above integrates with your guest list and
-    matches the site aesthetic, which is why it is preferred.
-
-  <section class="section" style="padding-top:0;">
-    <div style="max-width:700px; margin: 0 auto;">
-      <iframe
-        src="PASTE_YOUR_GOOGLE_FORM_EMBED_URL_HERE"
-        width="100%"
-        height="900"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0"
-        title="RSVP Form"
-        style="border: 1px solid var(--color-border);"
-      >
-        Loading form…
-      </iframe>
-      <p style="font-size:0.82rem; color:var(--color-muted); margin-top:8px;">
-        Having trouble? <a href="PASTE_YOUR_GOOGLE_FORM_DIRECT_URL_HERE" target="_blank" class="link">Open the form directly</a>.
-      </p>
-    </div>
-  </section>
-  -->
-
 </main>
 
 <footer class="footer">
@@ -275,197 +248,38 @@
   </p>
 </footer>
 
-<script>
+<script data-cfasync="false">
 /*
   ============================================================
-  GUEST LIST
+  CONFIGURATION
   ============================================================
-  HOW TO EDIT:
-  Each entry in GUEST_LIST is one invitation unit (one envelope).
+  APPS_SCRIPT_URL: paste your deployed Web App URL here.
+  See Code.gs for setup instructions.
 
-  Key:      Any one person's name from this invitation, LOWERCASE,
-            spaces normalised. You only need ONE key per invitation
-            group — the lookup logic automatically searches every
-            name inside each party's names array, so any person on
-            the invite can find their own RSVP by typing their name.
-
-            Convention: use the primary invitee's name as the key.
-            The key is also used as a fallback label in the Sheet.
-
-  Value object:
-    names:  Array of everyone on this invitation.
-            Each person in this array should be able to look
-            themselves up and submit their own individual RSVP.
-            Add a matching GUEST_LIST entry for each person if you
-            want exact-key lookup (fastest), or rely on the
-            names-array scan (automatic, no extra entries needed).
-
-    note:   Optional short note shown under the party summary.
-            E.g. "Evening only" or "Accommodation confirmed".
-            Leave as empty string "" if not needed.
-
-  ADDING A GUEST:
-    Add a new entry following the pattern below.
-    The key must be unique (two guests with the same full name →
-    use a middle name or initial: "james a smith").
-
-  PLUS-ONES:
-    Include the plus-one's name in the names array if known.
-    If unknown: names: ['Priya Patel', 'Priya\'s plus-one']
-    The confirmation screen will prompt each person to RSVP
-    individually — no need to duplicate the entry.
-
-  REMOVING A GUEST:
-    Delete their entry. The lookup will return "not found".
-
-  EXAMPLE ENTRIES ARE SHOWN — replace with your actual guest list.
+  FORM_FIELDS.token: once you've added a token field to the
+  Google Form, replace 'entry.REPLACE_WITH_TOKEN_ENTRY_ID'
+  with the real entry ID from the prefill URL.
   ============================================================
 */
-const GUEST_LIST = {
-  /* FORMAT: 'primary name lowercase': { names: [...], note: '' } */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2IGd6wfDpjvZQvmvv1_s-7zeigQh1d_crWnuznp76yT6quKsO5V_6IqCO0m1jQrxM/exec';
+/* ↑ PASTE YOUR APPS SCRIPT WEB APP URL HERE */
 
-  'alice hutchinson-keip': {
-    names: ['Alice Hutchinson-Keip'],
-    note: 'Bride'
-  },
-  'oliver vincent': {
-    names: ['Oliver Vincent'],
-    note: 'Groom'
-  },
-
-  'nici loughran': {
-    names: ['Nici Loughran', 'Georgia Loughran'],
-    note: 'Cousin'
-  },
-  'mike loughran': {
-    names: ['Mike Loughran'],
-    note: ''
-  },
-  'amy wardle': {
-    names: ['Amy Wardle', 'Luke Wardle'],
-    note: 'Bridesmaid'
-  },
-  'luke wardle': {
-    names: ['Luke Wardle', 'Amy Wardle'],
-    note: ''
-  },
-  'robert hutchinson-keip': {
-    names: ['Robert Hutchinson-Keip'],
-    note: 'Father of the Bride'
-  },
-  'holly hutchinson-keip': {
-    names: ['Holly Hutchinson-Keip', 'Robert Hutchinson-Keip'],
-    note: 'Mother of the Bride'
-  },
-  /* Couple invitation — both names listed */
-  'sarah jones': {
-    names: ['Sarah Jones', 'Michael Jones'],
-    note: ''
-  },
-
-  /* Solo invitation — no plus-one */
-  'james smith': {
-    names: ['James Smith'],
-    note: ''
-  },
-
-  /* Solo with plus-one (plus-one name not yet known) */
-  'priya patel': {
-    names: ['Priya Patel', 'Plus-one (Priya\'s guest)'],
-    note: 'You\'re welcome to bring a guest — please add their name in the message field.'
-  },
-
-  /*
-    ADD YOUR FULL GUEST LIST BELOW THIS LINE.
-    Delete the example entries above once you have real data.
-
-    Template:
-    'firstname lastname': {
-      names: ['Firstname Lastname'],
-      note: ''
-    },
-  */
-
-};
-
-/*
-  ============================================================
-  GOOGLE FORM SUBMISSION
-  ============================================================
-  The custom form above submits responses to a Google Form
-  so all responses land in your Google Sheet automatically.
-
-  HOW TO SET UP:
-  1. Create a Google Form with these fields:
-       - Guest key (short answer)
-       - Attending names (paragraph)
-       - Declining names (paragraph)
-       - Dietary requirements (short answer)
-       - Song request (short answer)
-       - Message (paragraph)
-
-  2. Get the form's prefill URL:
-     Open the form → three-dot menu → Get pre-filled link
-     Fill in dummy values → Get link
-     Copy the URL — it will look like:
-     https://docs.google.com/forms/d/e/XXXXX/viewform?usp=pp_url&entry.123=value&entry.456=value
-
-     https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/viewform?usp=pp_url
-     &entry.102251949=Oliver+Vincent
-     &entry.915626348=Yes
-     &entry.298352296=No
-     &entry.1784969038=ol
-     &entry.1814084214=plenty
-     &entry.1670549511=lets+go
-     &entry.366955240=here+and+there
-
-
-     https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/viewform?usp=pp_url
-     &entry.102251949=Oliver+Vincent
-     &entry.915626348=Yes
-     &entry.298352296=No
-     &entry.1784969038=olicevincent@gmail.com
-     &entry.1814084214=Nothing
-     &entry.1670549511=You+and+Me+baby
-     &entry.366955240=Hi
-
-  3. From that URL, extract:
-     - The form action URL (everything before ?usp=...)
-       → paste into FORM_ACTION below
-     - The entry IDs (entry.XXXXXXX numbers)
-       → map each to the correct field below
-
-  4. Test: submit the form on the site and check your Google Sheet.
-
-  ============================================================
-  Each individual submits their own row. The guest_key field
-  contains the submitter's own matched name (e.g. "Michael Jones"),
-  not the party key. The Apps Script deduplicates on this value,
-  so re-submissions overwrite rather than append.
-  Form action and entry IDs are confirmed working — do not change
-  unless you recreate the Google Form.
-*/
 const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/formResponse';
 
-/*
-  Map each field to its Google Form entry ID.
-  Replace entry.XXXXXXXX with your real IDs from the prefill URL.
-*/
 const FORM_FIELDS = {
-  guestKey:      'entry.102251949',  
-  attending:     'entry.915626348',  
-  declining:     'entry.298352296',  
-  email:         'entry.1784969038',  
-  dietary:       'entry.1814084214',  
-  song:          'entry.1670549511',  
-  message:       'entry.366955240',  
+  guestKey:  'entry.102251949',
+  attending: 'entry.915626348',
+  declining: 'entry.298352296',
+  email:     'entry.1784969038',
+  dietary:   'entry.1814084214',
+  song:      'entry.1670549511',
+  message:   'entry.366955240',
+  token:     'entry.1520807740',
 };
 
 /* ============================================================
-   LOOKUP LOGIC — do not edit below this line unless you need
-   to change behaviour
+   STATE
    ============================================================ */
-
 const stepLookup  = document.getElementById('step-lookup');
 const stepRsvp    = document.getElementById('step-rsvp');
 const stepConfirm = document.getElementById('step-confirm');
@@ -478,63 +292,60 @@ const attendanceGrid    = document.getElementById('attendance-grid');
 const invitedPartyNames = document.getElementById('invited-party-names');
 const guestKeyInput     = document.getElementById('guest-key');
 
-let currentGuest  = null; /* The matched GUEST_LIST entry */
-let submitterName = null; /* The exact name matched from the names array */
+let currentGuest    = null;  /* The matched guest object returned by Apps Script */
+let submitterName   = null;  /* The exact name matched (matchedName from response) */
+let submissionToken = null;  /* One-time token received from Apps Script on lookup */
 
 /* ============================================================
-   LOOKUP LOGIC
-   ============================================================
-   Priority order:
-   1. Exact key match against GUEST_LIST keys (fastest path)
-   2. Scan every party's names array for a full-name match
-   3. Fuzzy fallback: first or last word of any key
-      (only returns if unambiguous — exactly one match)
+   NORMALISE — used client-side for partner nudge matching only.
+   The authoritative lookup now runs server-side in Code.gs.
    ============================================================ */
 function normaliseName(str) {
-  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+  return String(str).trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-function findGuest(rawInput) {
-  const key = normaliseName(rawInput);
-
-  /* 1. Exact key match */
-  if (GUEST_LIST[key]) {
-    return {
-      key: key,
-      matchedName: GUEST_LIST[key].names[0],
-      ...GUEST_LIST[key]
-    };
+/* ============================================================
+   FETCH GUEST — async lookup via Apps Script Web App
+   ============================================================
+   POSTs { name } to APPS_SCRIPT_URL.
+   On success: returns the parsed response object.
+   On network failure or non-OK HTTP: throws an error whose
+   .isNetwork property is true (used to show the right message).
+   ============================================================ */
+async function fetchGuest(rawInput) {
+  if (!APPS_SCRIPT_URL) {
+    /*
+      Development fallback: APPS_SCRIPT_URL not yet set.
+      Fail loudly so you notice during local testing rather
+      than silently returning not-found for every lookup.
+    */
+    const err = new Error('APPS_SCRIPT_URL is not configured.');
+    err.isNetwork = true;
+    throw err;
   }
 
-  /* 2. Scan all names arrays for a full-name match */
-  for (const [k, v] of Object.entries(GUEST_LIST)) {
-    for (const name of v.names) {
-      if (normaliseName(name) === key) {
-								 
-																
-        return {
-          key: k,
-          matchedName: name,
-          ...v
-        };
-      }
-    }
+  let response;
+  try {
+    response = await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name: rawInput })
+    });
+  } catch (networkErr) {
+    const err = new Error('Network request failed.');
+    err.isNetwork = true;
+    throw err;
   }
 
-  /* 3. Fuzzy fallback: first or last word of any key — only if unambiguous */
-  const fuzzyMatches = [];
-  for (const [k, v] of Object.entries(GUEST_LIST)) {
-    const parts = k.split(' ');
-    if (key === parts[0] || key === parts[parts.length - 1]) {
-      fuzzyMatches.push({ key: k, matchedName: v.names[0], ...v });
-    }
-  }
-  if (fuzzyMatches.length === 1) {
-    return fuzzyMatches[0];
+  if (!response.ok) {
+    const err = new Error('Server returned ' + response.status);
+    err.isNetwork = true;
+    throw err;
   }
 
-  return null;
+  return response.json();
 }
+
 /* ============================================================
    BUILD SINGLE ATTENDANCE ROW
    ============================================================ */
@@ -542,7 +353,7 @@ function buildAttendanceGrid(matchedName) {
   const grid = document.getElementById('attendance-grid');
   grid.innerHTML = '';
 
-    const row = document.createElement('div');
+  const row = document.createElement('div');
   row.className = 'attendance-row';
 
   const nameEl = document.createElement('span');
@@ -553,7 +364,7 @@ function buildAttendanceGrid(matchedName) {
   options.className = 'attendance-row__options';
 
   ['yes', 'no'].forEach(function (val) {
-    const id = 'attend-0-' + val;
+    const id    = 'attend-0-' + val;
     const label = document.createElement('label');
     label.setAttribute('for', id);
 
@@ -576,28 +387,30 @@ function buildAttendanceGrid(matchedName) {
   row.appendChild(options);
   grid.appendChild(row);
 }
+
 /* ============================================================
    SHOW STEP 2
    ============================================================ */
 function showRsvpStep(guest) {
-  currentGuest  = guest;
-  submitterName = guest.matchedName;
+  currentGuest    = guest;
+  submitterName   = guest.matchedName;
+  submissionToken = guest.token || '';
 
   /* Set the hidden guest-key field to the individual's matched name,
-     not the party key. The Sheet deduplicates on this value. */
+     not a party key. The Apps Script deduplicates on this value. */
   guestKeyInput.value = submitterName;
 
   /* Party summary — shows all names on the invitation */
   invitedPartyNames.textContent = guest.names.join(' & ');
 
-  const noteEl = document.getElementById('invited-party-note');
-  if (noteEl) { noteEl.remove(); }
+  const existingNote = document.getElementById('invited-party-note');
+  if (existingNote) { existingNote.remove(); }
   if (guest.note) {
-    const note = document.createElement('p');
-    note.id = 'invited-party-note';
-    note.style.cssText = 'font-size:0.82rem; color:var(--color-muted); margin:4px 0 0;';
-    note.textContent = guest.note;
-    document.getElementById('invited-party-box').appendChild(note);
+    const noteEl = document.createElement('p');
+    noteEl.id = 'invited-party-note';
+    noteEl.style.cssText = 'font-size:0.82rem; color:var(--color-muted); margin:4px 0 0;';
+    noteEl.textContent = guest.note;
+    document.getElementById('invited-party-box').appendChild(noteEl);
   }
 
   buildAttendanceGrid(submitterName);
@@ -610,23 +423,46 @@ function showRsvpStep(guest) {
 /* ============================================================
    LOOKUP BUTTON
    ============================================================ */
-lookupBtn.addEventListener('click', function () {
+lookupBtn.addEventListener('click', async function () {
   lookupError.textContent = '';
   const raw = lookupInput.value.trim();
+
   if (!raw) {
     lookupError.textContent = 'Please enter your name.';
     lookupInput.focus();
     return;
   }
-  const guest = findGuest(raw);
-  if (guest) {
-    showRsvpStep(guest);
-  } else {
-    lookupError.textContent =
-      'We couldn\'t find that name on our guest list. ' +
-      'Try your full name as it appears on your invitation, ' +
-      'or email us if you\'re having trouble.';
-    lookupInput.select();
+
+  /* Loading state */
+  lookupBtn.disabled    = true;
+  lookupBtn.textContent = 'Searching…';
+
+  try {
+    const guest = await fetchGuest(raw);
+
+    if (guest && guest.found) {
+      showRsvpStep(guest);
+    } else {
+      lookupError.textContent =
+        'We couldn\'t find that name on our guest list. ' +
+        'Try your full name as it appears on your invitation, ' +
+        'or email us if you\'re having trouble.';
+      lookupInput.select();
+    }
+  } catch (err) {
+    if (err.isNetwork) {
+      lookupError.innerHTML =
+        'Something went wrong — please try again. ' +
+        'If the problem continues, <a href="mailto:olicevincent@gmail.com?subject=RSVP%20query" class="link">email us</a>.';
+    } else {
+      lookupError.textContent =
+        'We couldn\'t find that name on our guest list. ' +
+        'Try your full name as it appears on your invitation, ' +
+        'or email us if you\'re having trouble.';
+    }
+  } finally {
+    lookupBtn.disabled    = false;
+    lookupBtn.textContent = 'Find my invitation';
   }
 });
 
@@ -636,8 +472,9 @@ lookupInput.addEventListener('keydown', function (e) {
 
 /* "Not you?" — reset to lookup step */
 document.getElementById('wrong-guest-btn').addEventListener('click', function () {
-  currentGuest  = null;
-  submitterName = null;
+  currentGuest    = null;
+  submitterName   = null;
+  submissionToken = null;
   lookupInput.value       = '';
   lookupError.textContent = '';
   stepRsvp.style.display  = 'none';
@@ -650,36 +487,46 @@ document.getElementById('wrong-guest-btn').addEventListener('click', function ()
    ============================================================
    Collects the individual's attendance decision and submits
    one row to Google Forms via the hidden iframe technique.
+
+   IMPORTANT: Google Forms does not send a success callback.
+   The page shows the confirmation screen after a 1.2s delay
+   and assumes success. Always verify by checking the Sheet.
    ============================================================ */
 document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   e.preventDefault();
   document.getElementById('form-live').textContent = '';
 
-													
-						
+  /* ── Honeypot check ──────────────────────────────────────
+     If a bot has filled the hidden 'website' field, silently
+     show the confirmation without posting anything real.
+     No alert, no changed behaviour — the bot sees success.
+  ────────────────────────────────────────────────────────── */
+  const honeypot = document.querySelector('input[name="website"]');
+  if (honeypot && honeypot.value) {
+    setTimeout(function () {
+      var selected = document.querySelector('input[name="attend-0"]:checked');
+      showConfirmation(selected ? selected.value === 'yes' : true);
+    }, 1200);
+    return;
+  }
 
-											 
+  /* ── Validate attendance ─────────────────────────────── */
   const selected = document.querySelector('input[name="attend-0"]:checked');
   if (!selected) {
-								  
     document.getElementById('attendance-error').textContent = "Please let us know if you'll be attending.";
     attendanceGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
-		  
-								 
   }
   document.getElementById('attendance-error').textContent = '';
 
-  const isAttending  = (selected.value === 'yes');
+  const isAttending = (selected.value === 'yes');
 
-								
+  /* ── Validate email ──────────────────────────────────── */
   const primaryEmail = document.getElementById('primary-email').value.trim();
   if (!primaryEmail) {
     document.getElementById('primary-email-error').textContent = 'Please enter your email address.';
     document.getElementById('primary-email').focus();
     return;
-		  
-								  
   }
   document.getElementById('primary-email-error').textContent = '';
 
@@ -690,10 +537,10 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   /*
     Build the form payload.
     - guestKey:  the submitter's own matched name (e.g. "Michael Jones")
-    - attending: submitter's name if attending, else empty
-    - declining: submitter's name if declining, else empty
-    The Apps Script deduplicates rows keyed on guest_key (column B),
-    so re-submissions overwrite the previous row cleanly.
+    - attending: submitter's name if attending, else "None"
+    - declining: submitter's name if declining, else "None"
+    - token:     one-time token from the Apps Script lookup response
+    The Apps Script deduplicates rows keyed on guest_key (column B).
   */
   const formData = new URLSearchParams();
   formData.append(FORM_FIELDS.guestKey,  submitterName);
@@ -703,47 +550,42 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   formData.append(FORM_FIELDS.dietary,   dietary || 'None');
   formData.append(FORM_FIELDS.song,      song    || '');
   formData.append(FORM_FIELDS.message,   message || '');
+  formData.append(FORM_FIELDS.token,     submissionToken || '');
 
   const submitBtn = document.getElementById('rsvp-submit');
   submitBtn.disabled    = true;
   submitBtn.textContent = 'Sending…';
 
-  if (!GOOGLE_FORM_ACTION.includes('PASTE_YOUR_FORM_ID_HERE')) {
-    /* Real submission via hidden iframe */
-    let iframe = document.getElementById('gform-iframe');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id    = 'gform-iframe';
-      iframe.name  = 'gform-iframe';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-    }
-
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method = 'POST';
-    hiddenForm.action = GOOGLE_FORM_ACTION;
-    hiddenForm.target = 'gform-iframe';
-    hiddenForm.style.display = 'none';
-
-    for (const [k, v] of formData.entries()) {
-      const field = document.createElement('input');
-      field.type  = 'hidden';
-      field.name  = k;
-      field.value = v;
-      hiddenForm.appendChild(field);
-    }
-
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
-    document.body.removeChild(hiddenForm);
-
-    /* Google Forms provides no success callback — assume success after delay */
-    setTimeout(function () { showConfirmation(isAttending); }, 1200);
-
-  } else {
-    /* Dev mode: no form wired yet — simulate success */
-    setTimeout(function () { showConfirmation(isAttending); }, 600);
+  /* Real submission via hidden iframe */
+  let iframe = document.getElementById('gform-iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id    = 'gform-iframe';
+    iframe.name  = 'gform-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
   }
+
+  const hiddenForm = document.createElement('form');
+  hiddenForm.method = 'POST';
+  hiddenForm.action = GOOGLE_FORM_ACTION;
+  hiddenForm.target = 'gform-iframe';
+  hiddenForm.style.display = 'none';
+
+  for (const [k, v] of formData.entries()) {
+    const field = document.createElement('input');
+    field.type  = 'hidden';
+    field.name  = k;
+    field.value = v;
+    hiddenForm.appendChild(field);
+  }
+
+  document.body.appendChild(hiddenForm);
+  hiddenForm.submit();
+  document.body.removeChild(hiddenForm);
+
+  /* Google Forms provides no success callback — assume success after delay */
+  setTimeout(function () { showConfirmation(isAttending); }, 1200);
 });
 
 /* ============================================================
@@ -753,7 +595,7 @@ function showConfirmation(isAttending) {
   stepRsvp.style.display    = 'none';
   stepConfirm.style.display = 'block';
 
-  var firstName  = submitterName.split(' ')[0];
+  var firstName  = submitterName ? submitterName.split(' ')[0] : 'there';
   var confirmMsg = document.getElementById('confirm-message');
   if (isAttending) {
     confirmMsg.textContent =
@@ -765,10 +607,12 @@ function showConfirmation(isAttending) {
       "we'll be thinking of you. Thank you for letting us know.";
   }
 
-									
-  var partners = currentGuest.names.filter(function (n) {
-    return normaliseName(n) !== normaliseName(submitterName);
-  });
+  /* Partner nudge — shown when the invitation covers more than one person */
+  var partners = currentGuest
+    ? currentGuest.names.filter(function (n) {
+        return normaliseName(n) !== normaliseName(submitterName);
+      })
+    : [];
 
   var nudgeBlock = document.getElementById('partner-nudge');
   var nudgeText  = document.getElementById('partner-nudge-text');
@@ -790,9 +634,10 @@ function showConfirmation(isAttending) {
 
     var partnerNameToLoad = partners[0];
     freshBtn.addEventListener('click', function () {
-								
-      currentGuest  = null;
-      submitterName = null;
+      /* Reset all form state before triggering the partner's lookup */
+      currentGuest    = null;
+      submitterName   = null;
+      submissionToken = null;
       document.getElementById('rsvp-form').reset();
       document.getElementById('attendance-error').textContent    = '';
       document.getElementById('primary-email-error').textContent = '';
@@ -801,20 +646,13 @@ function showConfirmation(isAttending) {
       sb.disabled    = false;
       sb.textContent = 'Send RSVP';
 
-										  
       stepConfirm.style.display = 'none';
       stepLookup.style.display  = 'block';
       lookupInput.value         = partnerNameToLoad;
       lookupError.textContent   = '';
 
-								 
-									  
-								   
-
-							   
+      /* Short delay so the DOM settles before the click fires */
       setTimeout(function () { lookupBtn.click(); }, 50);
-						  
-			 
     });
 
     nudgeBlock.style.display = '';
