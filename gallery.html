@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Gallery · Alice &amp; Oliver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Photo gallery — Alice &amp; Oliver, Prince Albert, April 2027.">
+
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             base-uri 'self';
+             form-action 'self';
+             upgrade-insecure-requests">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="visually-hidden" href="#main">Skip to content</a>
+
+<!-- AUTH GUARD -->
+<script>
+  if (sessionStorage.getItem('wt_auth') !== '1') {
+    window.location.replace('index.html');
+  }
+</script>
+
+<!-- NAV -->
+<header class="floating-nav floating-nav--dark" id="main-nav">
+  <div class="floating-nav__inner">
+    <a href="index.html" class="floating-nav__brand script">Alice &amp; Oliver</a>
+    <nav class="floating-nav__links" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="our-story.html">Story</a>
+      <a href="details.html">Details</a>
+      <a href="gallery.html" class="active">Gallery</a>
+      <a href="rsvp.html">RSVP</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- PAGE HEADER -->
+  <section class="section text-center" style="padding-top: 140px; padding-bottom: var(--space-2);">
+    <p class="script" style="font-size: 1.6rem; margin-bottom: 8px;">A Weekend in the Karoo</p>
+    <h1>Gallery</h1>
+    <p style="color: var(--color-muted);">Alice &amp; Oliver &middot; April 2027</p>
+  </section>
+
+  <!-- MASONRY GALLERY -->
+  <section class="section" style="padding-top: var(--space-2);">
+    <div class="gallery__grid" id="gallery-grid">
+
+      <!-- REAL PHOTOS (items 0–5) — wired to existing images -->
+
+      <figure class="gallery__item" data-index="0">
+        <img src="images/al_ol_engmt2.JPG" alt="Alice and Oliver engagement photo">
+      </figure>
+
+      <figure class="gallery__item" data-index="1">
+        <img src="images/al_ol_mzb1.jpg" alt="Alice and Oliver together">
+      </figure>
+
+      <figure class="gallery__item" data-index="2">
+        <img src="images/al_ol_ptgl.jpeg" alt="Travelling together in Portugal">
+      </figure>
+
+      <figure class="gallery__item" data-index="3">
+        <img src="images/al_ol_cmp_202501.2.JPG" alt="Alice and Oliver camping, January 2025">
+      </figure>
+
+      <figure class="gallery__item" data-index="4">
+        <img src="images/al_ol_vds_wed1.jpg" alt="Alice and Oliver wedding preview">
+      </figure>
+
+      <figure class="gallery__item" data-index="5">
+        <img src="images/Mos2008-11-08 213217.JPG" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <!-- PLACEHOLDER SLOTS (items 6–19) — swap for <img> tags when photos arrive -->
+      <!-- Each placeholder alternates portrait / landscape to suggest realistic layout -->
+
+      <figure class="gallery__item" data-index="6">
+        <img src="images/al_ol_brn_2025.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="7">
+        <img src="images/al_ol_engmt1.JPG" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="8">        
+        <img src="images/al_ol_mgb1.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="9">
+        <img src="images/al_ol_vds_wed2.JPG" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="10">
+        <img src="images/Flo & Chanel's Wedding-8691.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="11">
+        <img src="images/HTP-LeeTristan-HawksmoorHouse-2023-2818.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="12">
+        <img src="images/Website Pics/0b3d5187-a14c-4b0d-96a5-eed28e9fabd4.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="13">
+        <img src="images/Website Pics/0c8f1c96-2344-4d32-a923-7a4c44562280.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="14">
+        <img src="images/Website Pics/1D5CC0EF-8505-4AE3-AC98-213F24EE3483_1_102_o.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="15">
+        <img src="images/Website Pics/3D10EE35-8E65-4169-ACCE-D1DD0BA68354-6310-0000040D890670FA.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="16">
+        <img src="images/Website Pics/05A9ADF5-C133-44A4-A115-71EB5A418466_4_5005_c.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="17">
+        <img src="images/Website Pics/6AAB210D-7E8D-4856-AB86-D4D5BE67B9D1_1_102_o.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="18">
+        <img src="images/Website Pics/000007.JPG" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="19">
+        <img src="images/Website Pics/7C4E63EF-9FDA-4A6A-9B93-527D777FD181-546712F2-846C-49C7-94F8-9C6C062C8391.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="20">
+        <img src="images/Website Pics/8FF1779A-788D-4EA6-8399-16B023EF4BCA_1_105_c.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="21">
+        <img src="images/Website Pics/000011.JPG" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="22">
+        <img src="images/Website Pics/652A9FCA-437E-4529-B035-3A61CD5D7FEE-11848-00000ED7843A0A91.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="23">
+        <img src="images/Website Pics/B196C420-2FE8-47D6-917D-8C30CEA9DD89-8911-000005BCE6AE8C6D.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="24">
+        <img src="images/Website Pics/DSCF0639.jpg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="25">
+        <img src="images/Website Pics/DSCF0798.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+      <figure class="gallery__item" data-index="26">
+        <img src="images/Website Pics/DSCF0835.jpeg" alt="Prince Albert landscape, Karoo">
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- RSVP CTA -->
+  <section class="section text-center">
+    <h2>Not yet RSVP'd?</h2>
+    <p>We'd love to see you there.</p>
+    <a href="rsvp.html" class="btn">RSVP now</a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>
+    &copy; 2027 Alice Hutchinson-Keip &amp; Oliver Vincent
+    &nbsp;&middot;&nbsp;
+    <a href="mailto:olicevincent@gmail.com">Contact us</a>
+  </p>
+</footer>
+
+<script>
+/*
+  ============================================================
+  SCROLL NAV
+  Guard: return early on dark-nav pages to prevent class conflict.
+  ============================================================
+*/
+document.addEventListener('scroll', function () {
+  const nav = document.querySelector('.floating-nav');
+  if (nav.classList.contains('floating-nav--dark')) { return; }
+  if (window.scrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+
+/*
+  ============================================================
+  GALLERY INIT
+  - Collects all real <img> items for lightbox navigation
+  - Assigns staggered transition-delay to each .gallery__item
+  - Sets up IntersectionObserver for scroll fade-in
+  ============================================================
+*/
+(function () {
+
+  const grid  = document.getElementById('gallery-grid');
+  const items = Array.from(grid.querySelectorAll('.gallery__item'));
+
+  /* Collect indices of items that contain a real <img> — used by lightbox */
+  const realImageItems = items.filter(function (item) {
+    return item.querySelector('img') !== null;
+  });
+
+  /* Staggered transition-delay: item index mod 4, * 80ms */
+  items.forEach(function (item, i) {
+    item.style.transitionDelay = (i % 4) * 80 + 'ms';
+  });
+
+  /* Scroll fade-in via IntersectionObserver */
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('gallery__item--visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  items.forEach(function (item) {
+    observer.observe(item);
+  });
+
+  /*
+    ============================================================
+    LIGHTBOX
+    Injected once into the DOM on first use.
+    Only real <img> items are navigable; placeholders are skipped.
+    ============================================================
+  */
+  var lightbox     = null;
+  var lightboxImg  = null;
+  var currentIndex = 0; /* index within realImageItems array */
+
+  function buildLightbox() {
+    var lb = document.createElement('div');
+    lb.id = 'lightbox';
+    lb.className = 'lightbox';
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.setAttribute('aria-label', 'Photo lightbox');
+
+    var img = document.createElement('img');
+    img.className = 'lightbox__img';
+    img.alt = '';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'lightbox__close';
+    closeBtn.setAttribute('aria-label', 'Close gallery');
+    closeBtn.textContent = '×';
+
+    var prevBtn = document.createElement('button');
+    prevBtn.className = 'lightbox__arrow lightbox__prev';
+    prevBtn.setAttribute('aria-label', 'Previous photo');
+    prevBtn.textContent = '‹';
+
+    var nextBtn = document.createElement('button');
+    nextBtn.className = 'lightbox__arrow lightbox__next';
+    nextBtn.setAttribute('aria-label', 'Next photo');
+    nextBtn.textContent = '›';
+
+    lb.appendChild(img);
+    lb.appendChild(closeBtn);
+    lb.appendChild(prevBtn);
+    lb.appendChild(nextBtn);
+    document.body.appendChild(lb);
+
+    closeBtn.addEventListener('click', closeLightbox);
+    prevBtn.addEventListener('click', function () { navigateLightbox(-1); });
+    nextBtn.addEventListener('click', function () { navigateLightbox(1); });
+
+    /* Close on backdrop click (not on image or controls) */
+    lb.addEventListener('click', function (e) {
+      if (e.target === lb) { closeLightbox(); }
+    });
+
+    return { lb: lb, img: img };
+  }
+
+  function openLightbox(itemEl) {
+    var idx = realImageItems.indexOf(itemEl);
+    if (idx === -1) { return; }
+    currentIndex = idx;
+
+    if (!lightbox) {
+      var built = buildLightbox();
+      lightbox    = built.lb;
+      lightboxImg = built.img;
+    }
+
+    updateLightboxImage();
+    lightbox.classList.add('lightbox--open');
+    document.body.style.overflow = 'hidden';
+    lightbox.querySelector('.lightbox__close').focus();
+  }
+
+  function closeLightbox() {
+    if (!lightbox) { return; }
+    lightbox.classList.remove('lightbox--open');
+    document.body.style.overflow = '';
+  }
+
+  function navigateLightbox(direction) {
+    currentIndex = (currentIndex + direction + realImageItems.length) % realImageItems.length;
+    updateLightboxImage();
+  }
+
+  function updateLightboxImage() {
+    var item   = realImageItems[currentIndex];
+    var imgEl  = item.querySelector('img');
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt;
+  }
+
+  /* Keyboard support */
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox || !lightbox.classList.contains('lightbox--open')) { return; }
+    if (e.key === 'ArrowLeft')  { navigateLightbox(-1); }
+    if (e.key === 'ArrowRight') { navigateLightbox(1); }
+    if (e.key === 'Escape')     { closeLightbox(); }
+  });
+
+  /* Wire click handlers to real image items only */
+  realImageItems.forEach(function (item) {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function () {
+      openLightbox(item);
+    });
+  });
+
+}());
+</script>
+
+</body>
+</html>
