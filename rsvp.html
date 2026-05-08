@@ -260,8 +260,8 @@
   Google Form, replace 'entry.REPLACE_WITH_TOKEN_ENTRY_ID'
   with the real entry ID from the prefill URL.
   ============================================================
-*/
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2IGd6wfDpjvZQvmvv1_s-7zeigQh1d_crWnuznp76yT6quKsO5V_6IqCO0m1jQrxM/exec';
+*/                       
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaPB6E70ah-wkExiTz4iTMEyedGLI69PeyXChuaLYPGu0x_VZUh5g5e5OtL0TQDp_k/exec';
 /* ↑ PASTE YOUR APPS SCRIPT WEB APP URL HERE */
 
 const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSc-7zMb6K-kdq2iYhH_lUlxSeeutsboy4xfwI-pEXManupC8Q/formResponse';
@@ -314,23 +314,22 @@ function normaliseName(str) {
    ============================================================ */
 async function fetchGuest(rawInput) {
   if (!APPS_SCRIPT_URL) {
-    /*
-      Development fallback: APPS_SCRIPT_URL not yet set.
-      Fail loudly so you notice during local testing rather
-      than silently returning not-found for every lookup.
-    */
     const err = new Error('APPS_SCRIPT_URL is not configured.');
     err.isNetwork = true;
     throw err;
   }
 
   let response;
+
   try {
+    const formData = new URLSearchParams();
+    formData.append('name', rawInput);
+
     response = await fetch(APPS_SCRIPT_URL, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ name: rawInput })
+      method: 'POST',
+      body: formData
     });
+
   } catch (networkErr) {
     const err = new Error('Network request failed.');
     err.isNetwork = true;
@@ -345,7 +344,6 @@ async function fetchGuest(rawInput) {
 
   return response.json();
 }
-
 /* ============================================================
    BUILD SINGLE ATTENDANCE ROW
    ============================================================ */
