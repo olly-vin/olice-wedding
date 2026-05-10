@@ -1049,14 +1049,14 @@ select {
     columns: 2;
   }
 
-  .floating-nav__links {
+  /*.floating-nav__links {
     display: flex;
     gap: 14px;
   }
 
   .floating-nav__links a {
     font-size: 0.78rem;
-  }
+  }*/
 }
 
 @media (max-width: 480px) {
