@@ -40,7 +40,7 @@
     "@context": "https://schema.org",
     "@type": "Event",
     "name": "Wedding of Alice Hutchinson-Keip and Oliver Vincent",
-    "startDate": "2027-03-04T15:00:00+02:00",
+    "startDate": "2027-04-03T15:00:00+02:00",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     "location": {
@@ -109,15 +109,40 @@
 <header class="floating-nav" id="main-nav">
   <div class="floating-nav__inner">
     <span class="floating-nav__brand script">Alice & Oliver</span>
-    <nav class="floating-nav__links" aria-label="Primary">
-      <a href="index.html" class="active">Home</a>
-      <a href="our-story.html">Story</a>
-      <a href="details.html">Details</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="rsvp.html">RSVP</a>
-    </nav>
+    <button
+      class="nav-hamburger"
+      id="nav-hamburger"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="nav-drawer"
+    >
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+    </button>
   </div>
 </header>
+
+<!-- NAV DRAWER -->
+<nav
+  class="nav-drawer"
+  id="nav-drawer"
+  aria-label="Primary navigation"
+  aria-hidden="true"
+>
+  <button class="nav-drawer__close" id="nav-drawer-close" aria-label="Close navigation">&times;</button>
+  <a href="index.html" class="nav-drawer__brand">Alice &amp; Oliver</a>
+  <hr class="nav-drawer__divider">
+  <div class="nav-drawer__links">
+    <a href="index.html" class="active">Home</a>
+    <a href="our-story.html">Story</a>
+    <a href="details.html">Details</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="rsvp.html">RSVP</a>
+  </div>
+  <p class="nav-drawer__footer">April 2027 &middot; Prince Albert</p>
+</nav>
+<div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 
 <main id="main">
 
@@ -134,9 +159,9 @@
       <h2 class="script" style="font-size:2rem; letter-spacing:0.1em; margin-bottom:14px; color: #ffffff;">
         You're invited
       </h2>
-      <span class="names script">Alice & Oliver</span>
+      <span class="names script">Alice &amp; Oliver</span>
       <p style="font-size:0.95rem; letter-spacing:0.1em; margin-top:0;">
-        April 4th, 2027 &middot; Prince Albert, Karoo
+        April 3rd, 2027 &middot; Prince Albert, Karoo
       </p>
       <a href="rsvp.html" class="btn" style="margin-top:24px;">RSVP</a>
       <span class="hero__scroll-cue" aria-hidden="true">↓</span>
@@ -151,10 +176,12 @@
         We’re so happy you’re here.
       </p>
       <p>
-Bringing together the people we love in a place as special as Prince Albert feels like a dream, and we can’t wait to share it with you. The weekend is going to be filled with good food, long tables, longer drinks, warm Karoo evenings, laughter and loved ones. 
+        Bringing together the people we love in a place as special as Prince Albert feels like a dream, 
+        and we can’t wait to share it with you. The weekend is going to be filled with good food, 
+        long tables, longer drinks, Karoo evenings, laughter and loved ones. 
       </p>
       <p>
-Thank you for being part of our story, it means more to us than we can put into words.
+        Thank you for being part of our story, it means more to us than we can put into words.
 
       </p>
     </div>
@@ -177,7 +204,7 @@ Thank you for being part of our story, it means more to us than we can put into 
       </div>
       <div class="three-col__item">
         <span class="three-col__label">Dress</span>
-        <span class="three-col__value">Smart casual</span>
+        <span class="three-col__value">Formal</span>
         <!--
           TODO: Update dress code once decided.
         -->
@@ -348,12 +375,60 @@ Thank you for being part of our story, it means more to us than we can put into 
 */
 document.addEventListener('scroll', function () {
   const nav = document.querySelector('.floating-nav');
+  if (nav.classList.contains('floating-nav--dark')) { return; }
   if (window.scrollY > 50) {
     nav.classList.add('scrolled');
   } else {
     nav.classList.remove('scrolled');
   }
 });
+
+/*
+  ============================================================
+  NAV DRAWER
+  ============================================================
+*/
+(function () {
+  var hamburger = document.getElementById('nav-hamburger');
+  var drawer    = document.getElementById('nav-drawer');
+  var overlay   = document.getElementById('nav-overlay');
+  var closeBtn  = document.getElementById('nav-drawer-close');
+
+  function openDrawer() {
+    drawer.classList.add('nav-drawer--open');
+    overlay.classList.add('nav-overlay--visible');
+    hamburger.classList.add('nav-hamburger--open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('nav-drawer--open');
+    overlay.classList.remove('nav-overlay--visible');
+    hamburger.classList.remove('nav-hamburger--open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', function () {
+    drawer.classList.contains('nav-drawer--open') ? closeDrawer() : openDrawer();
+  });
+
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && drawer.classList.contains('nav-drawer--open')) {
+      closeDrawer();
+    }
+  });
+
+  drawer.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', closeDrawer);
+  });
+}());
 </script>
 
 </body>
