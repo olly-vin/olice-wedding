@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Our Story · Alice & Oliver</title>
+  <title>Our Story · Alice &amp; Oliver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Our story — how it all began.">
 
@@ -29,19 +29,39 @@
   }
 </script>
 
-<!-- NAV -->
+<!-- FLOATING NAV — dark variant -->
 <header class="floating-nav floating-nav--dark">
   <div class="floating-nav__inner">
-    <a href="index.html" class="floating-nav__brand script">Alice & Oliver</a>
-    <nav class="floating-nav__links">
-      <a href="index.html">Home</a>
-      <a href="our-story.html" class="active">Story</a>
-      <a href="details.html">Details</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="rsvp.html">RSVP</a>
-    </nav>
+    <a href="index.html" class="floating-nav__brand script">Alice &amp; Oliver</a>
+    <button
+      class="nav-hamburger"
+      id="nav-hamburger"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="nav-drawer"
+    >
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+    </button>
   </div>
 </header>
+
+<!-- NAV DRAWER -->
+<nav class="nav-drawer" id="nav-drawer" aria-label="Primary navigation" aria-hidden="true">
+  <button class="nav-drawer__close" id="nav-drawer-close" aria-label="Close navigation">&times;</button>
+  <a href="index.html" class="nav-drawer__brand">Alice &amp; Oliver</a>
+  <hr class="nav-drawer__divider">
+  <div class="nav-drawer__links">
+    <a href="index.html">Home</a>
+    <a href="our-story.html" class="active">Story</a>
+    <a href="details.html">Details</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="rsvp.html">RSVP</a>
+  </div>
+  <p class="nav-drawer__footer">April 2027 &middot; Prince Albert</p>
+</nav>
+<div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 
 <main id="main">
 
@@ -76,11 +96,14 @@
         <h2>How we met</h2>
         <p>
           <!-- WRITE YOUR STORY HERE -->
-          Alice and Olly first met in primary school at a music evening — he was there playing the violin. Somewhere between the performances and polite small talk, they were introduced. Olly remembers thinking she was strangely cool — the kind of person who replied “Haga Haga” instead of “Haha.”
+          Alice and Olly first met in primary school at a music evening — he was there playing the violin. 
+          Somewhere between the performances and polite small talk, they were introduced. 
+          Olly remembers thinking she was strangely cool — the kind of person who replied “Haga Haga” instead of “Haha.”
         </p>
         <p>
           What followed was a gentle, slightly misaligned childhood almost-romance: MXit messages, overlapping friendships, school events but timing, even then, had its own ideas.
-They drifted apart in the natural way teenagers do: different schools, different provinces, different lives unfolding. But never entirely out of orbit. There was always a faint awareness, a name that lingered, a small flicker of butterflies when one’s name appeared on the other’s screen.
+          They drifted apart in the natural way teenagers do: different schools, different provinces, different lives unfolding. But never entirely out of orbit. 
+          There was always a faint awareness, a name that lingered, a small flicker of butterflies when one’s name appeared on the other’s screen.
         </p>
       </div>
 
@@ -95,16 +118,18 @@ They drifted apart in the natural way teenagers do: different schools, different
         <h2>Falling in love</h2>
         <p>
           Years later, having both flirted more with dance floors than with degrees, fate intervened. They found themselves at a predrinks.
-This time, something clicked. There was a first kiss, followed by a handful of almosts over the next two years, there were moments that hinted at something more, but never quite settled into place.
+          This time, something clicked. There was a first kiss, followed by a handful of almosts over the next two years, 
+          there were moments that hinted at something more, but never quite settled into place.
         </p>
         <p>
           And then, once again, life carried on… until lockdown.
-Out of the blue, Olly reached out and asked Alice what she was doing that weekend. A few days later, they found themselves escaping to The Magaliesburg and an easy laughter-filled weekend followed.. From there, things fell into place.  
-Early dates looked a little different like plant shopping, quiet dinners at home, meeting families a lot sooner than expected but it all felt entirely right.
-Later, when asked why he chose that moment to reach out, Olly’s answer was simple:
-He had always had a thing for Alice.
-He just needed to become the man she deserved first.
- </p>
+          Out of the blue, Olly reached out and asked Alice what she was doing that weekend. 
+          A few days later, they found themselves escaping to The Magaliesburg and an easy laughter-filled weekend followed. From there, things fell into place.  
+          Early dates looked a little different like plant shopping, quiet dinners at home, meeting families a lot sooner than expected but it all felt entirely right.
+          Later, when asked why he chose that moment to reach out, Olly’s answer was simple:
+          He always had a thing for Alice.
+          He just needed to become the man she deserved first.
+        </p>
       </div>
 
       <div>
@@ -155,13 +180,56 @@ He just needed to become the man she deserved first.
 
 <script>
   document.addEventListener('scroll', function () {
-    const nav = document.querySelector('.floating-nav');
+    var nav = document.querySelector('.floating-nav');
+    if (nav.classList.contains('floating-nav--dark')) { return; }
     if (window.scrollY > 50) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');
     }
   });
+
+  (function () {
+    var hamburger = document.getElementById('nav-hamburger');
+    var drawer    = document.getElementById('nav-drawer');
+    var overlay   = document.getElementById('nav-overlay');
+    var closeBtn  = document.getElementById('nav-drawer-close');
+
+    function openDrawer() {
+      drawer.classList.add('nav-drawer--open');
+      overlay.classList.add('nav-overlay--visible');
+      hamburger.classList.add('nav-hamburger--open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('nav-drawer--open');
+      overlay.classList.remove('nav-overlay--visible');
+      hamburger.classList.remove('nav-hamburger--open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', function () {
+      drawer.classList.contains('nav-drawer--open') ? closeDrawer() : openDrawer();
+    });
+
+    closeBtn.addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.classList.contains('nav-drawer--open')) {
+        closeDrawer();
+      }
+    });
+
+    drawer.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', closeDrawer);
+    });
+  }());
 </script>
 
 </body>

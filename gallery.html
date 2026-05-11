@@ -39,8 +39,35 @@
       <a href="gallery.html" class="active">Gallery</a>
       <a href="rsvp.html">RSVP</a>
     </nav>
+    <button
+      class="nav-hamburger"
+      id="nav-hamburger"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="nav-drawer"
+    >
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+      <span class="nav-hamburger__bar"></span>
+    </button>
   </div>
 </header>
+
+<!-- NAV DRAWER -->
+<nav class="nav-drawer" id="nav-drawer" aria-label="Primary navigation" aria-hidden="true">
+  <button class="nav-drawer__close" id="nav-drawer-close" aria-label="Close navigation">&times;</button>
+  <a href="index.html" class="nav-drawer__brand">Alice &amp; Oliver</a>
+  <hr class="nav-drawer__divider">
+  <div class="nav-drawer__links">
+    <a href="index.html">Home</a>
+    <a href="our-story.html">Story</a>
+    <a href="details.html">Details</a>
+    <a href="gallery.html" class="active">Gallery</a>
+    <a href="rsvp.html">RSVP</a>
+  </div>
+  <p class="nav-drawer__footer">April 2027 &middot; Prince Albert</p>
+</nav>
+<div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 
 <main id="main">
 
@@ -189,6 +216,53 @@
 </footer>
 
 <script>
+/*
+  ============================================================
+    NAV DRAWER
+  ============================================================
+*/
+(function () {
+  var hamburger = document.getElementById('nav-hamburger');
+  var drawer    = document.getElementById('nav-drawer');
+  var overlay   = document.getElementById('nav-overlay');
+  var closeBtn  = document.getElementById('nav-drawer-close');
+
+  function openDrawer() {
+    drawer.classList.add('nav-drawer--open');
+    overlay.classList.add('nav-overlay--visible');
+    hamburger.classList.add('nav-hamburger--open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('nav-drawer--open');
+    overlay.classList.remove('nav-overlay--visible');
+    hamburger.classList.remove('nav-hamburger--open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', function () {
+    drawer.classList.contains('nav-drawer--open') ? closeDrawer() : openDrawer();
+  });
+
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && drawer.classList.contains('nav-drawer--open')) {
+      closeDrawer();
+    }
+  });
+
+  drawer.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', closeDrawer);
+  });
+}());
+
 /*
   ============================================================
   SCROLL NAV
