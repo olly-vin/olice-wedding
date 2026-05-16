@@ -435,11 +435,8 @@ function showRsvpStep(guest) {
   submitterName   = guest.matchedName;
   submissionToken = guest.token || '';
 
-  /* Set the hidden guest-key field to the individual's matched name,
-     not a party key. The Apps Script deduplicates on this value. */
   guestKeyInput.value = submitterName;
 
-  /* Party summary — shows all names on the invitation */
   invitedPartyNames.textContent = guest.names.join(' & ');
 
   const existingNote = document.getElementById('invited-party-note');
@@ -452,7 +449,7 @@ function showRsvpStep(guest) {
     document.getElementById('invited-party-box').appendChild(noteEl);
   }
 
-  buildAttendanceGrid(submitterName);
+  buildAttendanceGrid(guest);  /* ← was submitterName, must be guest */
 
   stepLookup.style.display = 'none';
   stepRsvp.style.display   = 'block';
