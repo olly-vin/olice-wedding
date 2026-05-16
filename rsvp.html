@@ -381,10 +381,7 @@ function buildAttendanceGrid(guest) {
 														  
   attendanceGrid.innerHTML = '';
 
-  document.getElementById('plusone-email-group').style.display =
-    guest.names.length > 1 ? '' : 'none';
-
-  guest.names.forEach(function (name, i) {
+  [submitterName].forEach(function (name, i) {
     const row = document.createElement('div');
     row.className = 'attendance-row';
 								   
@@ -627,7 +624,7 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   const declining = [];
   let allAnswered = true;
 
-  currentGuest.names.forEach(function (name, i) {
+  [submitterName].forEach(function (name, i) {
     const selected = document.querySelector('input[name="attend-' + i + '"]:checked');
     if (!selected) {
       allAnswered = false;
