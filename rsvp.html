@@ -94,7 +94,7 @@
       <!-- STEP 1: Guest lookup -->
       <div id="step-lookup">
         <p style="text-align:center; color: var(--color-muted); margin-bottom: var(--space-3); font-size:0.9rem;">
-          Enter your name as it appears on your invitation to get started.
+          Enter your first and last name to get started.
         </p>
 
         <div class="form__group">
@@ -557,7 +557,7 @@ lookupBtn.addEventListener('click', async function () {
     } else {
       lookupError.textContent =
         'We couldn\'t find that name on our guest list. ' +
-        'Try your full name as it appears on your invitation, ' +
+        'Try your full name - first name last name, ' +
         'or email us if you\'re having trouble.';
       lookupInput.select();
     }
@@ -569,7 +569,7 @@ lookupBtn.addEventListener('click', async function () {
     } else {
       lookupError.textContent =
         'We couldn\'t find that name on our guest list. ' +
-        'Try your full name as it appears on your invitation, ' +
+        'Try your full name - first name last name, ' +
         'or email us if you\'re having trouble.';
     }
   } finally {
