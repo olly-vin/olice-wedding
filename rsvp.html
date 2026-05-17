@@ -10,6 +10,7 @@
     CSP: Google Forms embed requires docs.google.com and forms.gle.
     frame-src permits the hidden iframe POST.
     connect-src permits the fetch() to the Apps Script Web App.
+    
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
@@ -17,7 +18,7 @@
              style-src 'self' 'unsafe-inline';
              script-src 'self' 'unsafe-inline';
              frame-src https://docs.google.com;
-             connect-src https://script.google.com https://script.googleusercontent.com;
+             connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com;
              base-uri 'self';
              form-action 'self' https://docs.google.com;
              upgrade-insecure-requests">
@@ -93,7 +94,7 @@
       <!-- STEP 1: Guest lookup -->
       <div id="step-lookup">
         <p style="text-align:center; color: var(--color-muted); margin-bottom: var(--space-3); font-size:0.9rem;">
-          Enter your name as it appears on your invitation to get started.
+          Enter your first and last name to get started.
         </p>
 
         <div class="form__group">
@@ -316,6 +317,13 @@ let currentGuest    = null;  /* The matched guest object returned by Apps Script
 let submitterName   = null;  /* The exact name matched (matchedName from response) */
 let submissionToken = null;  /* One-time token received from Apps Script on lookup */
 
+/*
+  sessionSubmitted — tracks every name that has completed an RSVP
+  during this browser session. Persists across the partner nudge
+  flow so the nudge never offers a name that already submitted.
+  Resets on tab close — intentional, a wedding guest won't notice.
+*/
+const sessionSubmitted = new Set();
 /* ============================================================
    NORMALISE — used client-side for partner nudge matching only.
    The authoritative lookup now runs server-side in Code.gs.
@@ -365,45 +373,56 @@ async function fetchGuest(rawInput) {
   return response.json();
 }
 /* ============================================================
-   BUILD SINGLE ATTENDANCE ROW
+   BUILD ATTENDANCE GRID
+   ============================================================
+   One Yes/No row per person on the invitation.
    ============================================================ */
-function buildAttendanceGrid(matchedName) {
-  const grid = document.getElementById('attendance-grid');
-  grid.innerHTML = '';
+function buildAttendanceGrid(guest) {
+														  
+  attendanceGrid.innerHTML = '';
 
-  const row = document.createElement('div');
-  row.className = 'attendance-row';
+  [submitterName].forEach(function (name, i) {
+    const row = document.createElement('div');
+    row.className = 'attendance-row';
+								   
 
-  const nameEl = document.createElement('span');
-  nameEl.className = 'attendance-row__name';
-  nameEl.textContent = matchedName;
+    const nameEl = document.createElement('span');
+    nameEl.className = 'attendance-row__name';
+    nameEl.textContent = name;
 
-  const options = document.createElement('div');
-  options.className = 'attendance-row__options';
+										
+									
+    const options = document.createElement('div');
+    options.className = 'attendance-row__options';
 
-  ['yes', 'no'].forEach(function (val) {
-    const id    = 'attend-0-' + val;
-    const label = document.createElement('label');
-    label.setAttribute('for', id);
+    ['yes', 'no'].forEach(function (val) {
+      const id    = 'attend-' + i + '-' + val;
+      const label = document.createElement('label');
+      label.setAttribute('for', id);
+					  
+										   
 
-    const radio = document.createElement('input');
-    radio.type  = 'radio';
-    radio.name  = 'attend-0';
-    radio.id    = id;
-    radio.value = val;
-    radio.dataset.personName = matchedName;
+      const radio = document.createElement('input');
+      radio.type  = 'radio';
+      radio.name  = 'attend-' + i;
+      radio.id    = id;
+      radio.value = val;
+      radio.dataset.personName = name;
 
-    const span = document.createElement('span');
-    span.textContent = val === 'yes' ? 'Attending' : 'Unable to attend';
+      const span = document.createElement('span');
+      span.textContent = val === 'yes' ? 'Attending' : 'Unable to attend';
+							   
+	 
 
-    label.appendChild(radio);
-    label.appendChild(span);
-    options.appendChild(label);
+      label.appendChild(radio);
+      label.appendChild(span);
+      options.appendChild(label);
+    });
+
+    row.appendChild(nameEl);
+    row.appendChild(options);
+    attendanceGrid.appendChild(row);
   });
-
-  row.appendChild(nameEl);
-  row.appendChild(options);
-  grid.appendChild(row);
 }
 
 /* ============================================================
@@ -414,11 +433,8 @@ function showRsvpStep(guest) {
   submitterName   = guest.matchedName;
   submissionToken = guest.token || '';
 
-  /* Set the hidden guest-key field to the individual's matched name,
-     not a party key. The Apps Script deduplicates on this value. */
   guestKeyInput.value = submitterName;
 
-  /* Party summary — shows all names on the invitation */
   invitedPartyNames.textContent = guest.names.join(' & ');
 
   const existingNote = document.getElementById('invited-party-note');
@@ -431,11 +447,89 @@ function showRsvpStep(guest) {
     document.getElementById('invited-party-box').appendChild(noteEl);
   }
 
-  buildAttendanceGrid(submitterName);
+  buildAttendanceGrid(guest);  /* ← was submitterName, must be guest */
 
   stepLookup.style.display = 'none';
   stepRsvp.style.display   = 'block';
   stepRsvp.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+RENDER NUDGE
+   ============================================================
+   Called after every successful submission.
+
+   Builds the partner nudge block dynamically from scratch each
+   time — no cloneNode needed because the entire button container
+   is replaced, so no stacked listeners can accumulate.
+
+   Logic:
+   - Take all names on the invitation (currentGuest.names)
+   - Filter out anyone already in sessionSubmitted
+   - If none remain → hide the nudge block entirely
+   - If some remain → render one button per remaining person
+   ============================================================ */
+function renderNudge() {
+  const nudgeBlock = document.getElementById('partner-nudge');
+
+  /* Names on this invitation that haven't submitted yet this session */
+  const remaining = currentGuest.names.filter(function (n) {
+    return !sessionSubmitted.has(normaliseName(n));
+  });
+
+  if (remaining.length === 0) {
+    nudgeBlock.style.display = 'none';
+    return;
+  }
+
+  /* Rebuild nudge content from scratch */
+  nudgeBlock.innerHTML = '';
+
+  const nudgeText = document.createElement('p');
+  nudgeText.style.cssText = 'font-size:0.9rem; color:var(--color-text); margin-bottom:var(--space-2);';
+  nudgeText.innerHTML =
+    'If the others on your invitation haven\'t RSVPd \u2014 then do so below. ' +
+    'It\'ll simply update their response if they already have RSVPd.' +
+    '<br><strong>Who\'s next?</strong>';
+  nudgeBlock.appendChild(nudgeText);
+
+  const btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'display:flex; flex-wrap:wrap; gap:12px;';
+
+  remaining.forEach(function (name) {
+    const btn = document.createElement('button');
+    btn.className   = 'btn';
+    btn.textContent = 'RSVP for ' + name.split(' ')[0];
+
+    btn.addEventListener('click', function () {
+      /* Reset all form state before triggering the next person's lookup */
+      currentGuest    = null;
+      submissionToken = null;
+      document.getElementById('rsvp-form').reset();
+      document.getElementById('attendance-error').textContent    = '';
+      document.getElementById('primary-email-error').textContent = '';
+      document.getElementById('form-live').textContent           = '';
+
+      const sb = document.getElementById('rsvp-submit');
+      sb.disabled    = false;
+      sb.textContent = 'Send RSVP';
+
+      stepConfirm.style.display = 'none';
+      stepLookup.style.display  = 'block';
+      lookupInput.value         = name;
+      lookupError.textContent   = '';
+
+      /* Short delay so the DOM settles before the lookup fires */
+      setTimeout(function () { lookupBtn.click(); }, 50);
+    });
+
+    btnWrap.appendChild(btn);
+  });
+
+  nudgeBlock.appendChild(btnWrap);
+  nudgeBlock.style.cssText =
+    'display:block; margin-top:var(--space-3); padding:var(--space-2) var(--space-3); ' +
+    'border:1px solid var(--color-border); border-radius:2px; text-align:left;';
 }
 
 /* ============================================================
@@ -463,7 +557,7 @@ lookupBtn.addEventListener('click', async function () {
     } else {
       lookupError.textContent =
         'We couldn\'t find that name on our guest list. ' +
-        'Try your full name as it appears on your invitation, ' +
+        'Try your full name - first name last name, ' +
         'or email us if you\'re having trouble.';
       lookupInput.select();
     }
@@ -475,7 +569,7 @@ lookupBtn.addEventListener('click', async function () {
     } else {
       lookupError.textContent =
         'We couldn\'t find that name on our guest list. ' +
-        'Try your full name as it appears on your invitation, ' +
+        'Try your full name - first name last name, ' +
         'or email us if you\'re having trouble.';
     }
   } finally {
@@ -515,34 +609,45 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   document.getElementById('form-live').textContent = '';
 
   /* ── Honeypot check ──────────────────────────────────────
-     If a bot has filled the hidden 'website' field, silently
-     show the confirmation without posting anything real.
-     No alert, no changed behaviour — the bot sees success.
+     Hidden field — bots fill it, humans don't.
+     If populated: silently show confirmation, post nothing.												 
   ────────────────────────────────────────────────────────── */
   const honeypot = document.querySelector('input[name="website"]');
   if (honeypot && honeypot.value) {
-    setTimeout(function () {
-      var selected = document.querySelector('input[name="attend-0"]:checked');
-      showConfirmation(selected ? selected.value === 'yes' : true);
-    }, 1200);
+    sessionSubmitted.add(normaliseName(submitterName));
+    setTimeout(function () { showConfirmation([], []); }, 1200);
     return;
   }
 
-  /* ── Validate attendance ─────────────────────────────── */
-  const selected = document.querySelector('input[name="attend-0"]:checked');
-  if (!selected) {
-    document.getElementById('attendance-error').textContent = "Please let us know if you'll be attending.";
+  /* ── Gather attendance ───────────────────────────────── */
+  const attending = [];
+  const declining = [];
+  let allAnswered = true;
+
+  [submitterName].forEach(function (name, i) {
+    const selected = document.querySelector('input[name="attend-' + i + '"]:checked');
+    if (!selected) {
+      allAnswered = false;
+    } else if (selected.value === 'yes') {
+      attending.push(name);
+    } else {
+      declining.push(name);
+    }
+  });
+
+  if (!allAnswered) {
+    document.getElementById('attendance-error').textContent =
+      'Please select an attendance option for each person.';
     attendanceGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
   document.getElementById('attendance-error').textContent = '';
 
-  const isAttending = (selected.value === 'yes');
-
   /* ── Validate email ──────────────────────────────────── */
   const primaryEmail = document.getElementById('primary-email').value.trim();
   if (!primaryEmail) {
-    document.getElementById('primary-email-error').textContent = 'Please enter your email address.';
+    document.getElementById('primary-email-error').textContent =
+      'Please enter your email address.';
     document.getElementById('primary-email').focus();
     return;
   }
@@ -552,18 +657,12 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   const song    = document.getElementById('song').value.trim();
   const message = document.getElementById('message').value.trim();
 
-  /*
-    Build the form payload.
-    - guestKey:  the submitter's own matched name (e.g. "Michael Jones")
-    - attending: submitter's name if attending, else "None"
-    - declining: submitter's name if declining, else "None"
-    - token:     one-time token from the Apps Script lookup response
-    The Apps Script deduplicates rows keyed on guest_key (column B).
-  */
+	
+  /* Build form payload */
   const formData = new URLSearchParams();
   formData.append(FORM_FIELDS.guestKey,  submitterName);
-  formData.append(FORM_FIELDS.attending, isAttending ? submitterName : 'None');
-  formData.append(FORM_FIELDS.declining, isAttending ? 'None' : submitterName);
+  formData.append(FORM_FIELDS.attending, attending.join(', ') || 'None');
+  formData.append(FORM_FIELDS.declining, declining.join(', ') || 'None');
   formData.append(FORM_FIELDS.email,     primaryEmail);
   formData.append(FORM_FIELDS.dietary,   dietary || 'None');
   formData.append(FORM_FIELDS.song,      song    || '');
@@ -572,7 +671,7 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
 
   const submitBtn = document.getElementById('rsvp-submit');
   submitBtn.disabled    = true;
-  submitBtn.textContent = 'Sending…';
+  submitBtn.textContent = 'Sending\u2026';
 
   /* Real submission via hidden iframe */
   let iframe = document.getElementById('gform-iframe');
@@ -585,9 +684,9 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   }
 
   const hiddenForm = document.createElement('form');
-  hiddenForm.method = 'POST';
-  hiddenForm.action = GOOGLE_FORM_ACTION;
-  hiddenForm.target = 'gform-iframe';
+  hiddenForm.method  = 'POST';
+  hiddenForm.action  = GOOGLE_FORM_ACTION;
+  hiddenForm.target  = 'gform-iframe';
   hiddenForm.style.display = 'none';
 
   for (const [k, v] of formData.entries()) {
@@ -602,82 +701,44 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   hiddenForm.submit();
   document.body.removeChild(hiddenForm);
 
+  /* Mark this person as submitted in the session Set */
+  sessionSubmitted.add(normaliseName(submitterName));
+
   /* Google Forms provides no success callback — assume success after delay */
-  setTimeout(function () { showConfirmation(isAttending); }, 1200);
+  setTimeout(function () { showConfirmation(attending, declining); }, 1200);
 });
 
 /* ============================================================
-   CONFIRMATION + PARTNER NUDGE
+   SHOW CONFIRMATION + RENDER NUDGE
    ============================================================ */
-function showConfirmation(isAttending) {
+function showConfirmation(attending, declining) {
   stepRsvp.style.display    = 'none';
   stepConfirm.style.display = 'block';
 
-  var firstName  = submitterName ? submitterName.split(' ')[0] : 'there';
-  var confirmMsg = document.getElementById('confirm-message');
-  if (isAttending) {
+  const firstName  = submitterName ? submitterName.split(' ')[0] : 'there';
+  const confirmMsg = document.getElementById('confirm-message');
+
+  if (attending.length > 0 && declining.length === 0) {
     confirmMsg.textContent =
-      "We're so excited to celebrate with you, " + firstName + "! " +
-      "We'll be in touch with final details closer to the time.";
+      'We\'re so excited to celebrate with you, ' + firstName + '! ' +
+      'We\'ll be in touch with final details closer to the time.';
+  } else if (attending.length === 0) {
+    confirmMsg.textContent =
+      'We\'re sorry you won\'t be able to make it, ' + firstName +
+      ' \u2014 we\'ll be thinking of you. Thank you for letting us know.';
   } else {
     confirmMsg.textContent =
-      "We're sorry you won't be able to make it, " + firstName + " \u2014 " +
-      "we'll be thinking of you. Thank you for letting us know.";
+      'Thank you! We\'re looking forward to celebrating with ' +
+      attending.join(' & ') + '. We\'ll miss ' + declining.join(' & ') + '.';
   }
 
-  /* Partner nudge — shown when the invitation covers more than one person */
-  var partners = currentGuest
-    ? currentGuest.names.filter(function (n) {
-        return normaliseName(n) !== normaliseName(submitterName);
-      })
-    : [];
-
-  var nudgeBlock = document.getElementById('partner-nudge');
-  var nudgeText  = document.getElementById('partner-nudge-text');
-  var partnerBtn = document.getElementById('partner-rsvp-btn');
-
-  if (partners.length > 0) {
-    var partnerList  = partners.join(' & ');
-    var partnerFirst = partners[0].split(' ')[0];
-
-    nudgeText.textContent =
-      "If " + partnerList + " hasn't already RSVPd, they can do so below \u2014 " +
-      "it'll simply update their response if they have.";
-
-    partnerBtn.textContent = 'RSVP for ' + partnerFirst;
-
-    /* Clone to remove any stale listeners from a previous submission */
-    var freshBtn = partnerBtn.cloneNode(true);
-    partnerBtn.parentNode.replaceChild(freshBtn, partnerBtn);
-
-    var partnerNameToLoad = partners[0];
-    freshBtn.addEventListener('click', function () {
-      /* Reset all form state before triggering the partner's lookup */
-      currentGuest    = null;
-      submitterName   = null;
-      submissionToken = null;
-      document.getElementById('rsvp-form').reset();
-      document.getElementById('attendance-error').textContent    = '';
-      document.getElementById('primary-email-error').textContent = '';
-      document.getElementById('form-live').textContent           = '';
-      var sb = document.getElementById('rsvp-submit');
-      sb.disabled    = false;
-      sb.textContent = 'Send RSVP';
-
-      stepConfirm.style.display = 'none';
-      stepLookup.style.display  = 'block';
-      lookupInput.value         = partnerNameToLoad;
-      lookupError.textContent   = '';
-
-      /* Short delay so the DOM settles before the click fires */
-      setTimeout(function () { lookupBtn.click(); }, 50);
-    });
-
-    nudgeBlock.style.display = '';
-  } else {
-    nudgeBlock.style.display = 'none';
-  }
-
+  /*
+    renderNudge() rebuilds the nudge block from scratch using sessionSubmitted.
+    Called after every submission so the button list always reflects
+    exactly who still needs to RSVP in this session.
+  */
+  renderNudge();
+												   
   stepConfirm.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 /*
