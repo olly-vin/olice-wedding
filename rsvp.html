@@ -314,6 +314,7 @@ const attendanceGrid    = document.getElementById('attendance-grid');
 const invitedPartyNames = document.getElementById('invited-party-names');
 const guestKeyInput     = document.getElementById('guest-key');
 
+let formRenderedAt = null;   /* Form rendered date capture to evaluate submission speed*/
 let currentGuest    = null;  /* The matched guest object returned by Apps Script */
 let submitterName   = null;  /* The exact name matched (matchedName from response) */
 let submissionToken = null;  /* One-time token received from Apps Script on lookup */
@@ -712,6 +713,7 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   /* Mark this person as submitted in the session Set */
   sessionSubmitted.add(normaliseName(submitterName));
 
+  const isAttending = attending.length > 0;
   /* Google Forms provides no success callback — assume success after delay */
   // After hiddenForm.submit(), replace the old setTimeout(showConfirmation, 1200) with:
   setTimeout(async function () {
