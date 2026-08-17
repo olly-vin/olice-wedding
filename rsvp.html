@@ -145,7 +145,7 @@
           -->
           <input
             type="text"
-            name="website"
+            name="hp_check_field"
             style="position:absolute; left:-9999px;"
             tabindex="-1"
             autocomplete="off"
@@ -430,6 +430,7 @@ function buildAttendanceGrid(guest) {
    SHOW STEP 2
    ============================================================ */
 function showRsvpStep(guest) {
+  formRenderedAt = Date.now();   
   currentGuest    = guest;
   submitterName   = guest.matchedName;
   submissionToken = guest.token || '';
@@ -613,10 +614,16 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
      Hidden field — bots fill it, humans don't.
      If populated: silently show confirmation, post nothing.												 
   ────────────────────────────────────────────────────────── */
-  const honeypot = document.querySelector('input[name="website"]');
-  if (honeypot && honeypot.value) {
-    sessionSubmitted.add(normaliseName(submitterName));
-    setTimeout(function () { showConfirmation([], []); }, 1200);
+// In the submit handler, replace the honeypot block with:
+  const honeypot = document.querySelector('input[name="hp_check_field"]'); // renamed field
+  const fillTime = formRenderedAt ? (Date.now() - formRenderedAt) : 99999;
+  const looksLikeBot = honeypot && honeypot.value && fillTime < 3000;
+
+  if (looksLikeBot) {
+    setTimeout(function () {
+      var selected = document.querySelector('input[name="attend-0"]:checked');
+      showConfirmation(selected ? selected.value === 'yes' : true, null);
+    }, 1200);
     return;
   }
 
@@ -706,32 +713,55 @@ document.getElementById('rsvp-form').addEventListener('submit', function (e) {
   sessionSubmitted.add(normaliseName(submitterName));
 
   /* Google Forms provides no success callback — assume success after delay */
-  setTimeout(function () { showConfirmation(attending, declining); }, 1200);
+  // After hiddenForm.submit(), replace the old setTimeout(showConfirmation, 1200) with:
+  setTimeout(async function () {
+    let confirmed = null; // null = "couldn't check", true/false = real answer
+
+    try {
+      const verifyParams = new URLSearchParams();
+      verifyParams.append('action', 'verify');
+      verifyParams.append('guest_key', submitterName);
+
+      const verifyRes  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: verifyParams });
+      const verifyData = await verifyRes.json();
+      confirmed = verifyData.confirmed;
+    } catch (err) {
+      confirmed = null; // verify call itself failed — don't wrongly tell them it failed
+    }
+
+    showConfirmation(isAttending, confirmed);
+  }, 3000); // give the Sheet a few seconds to receive the row
 });
 
 /* ============================================================
    SHOW CONFIRMATION + RENDER NUDGE
    ============================================================ */
-function showConfirmation(attending, declining) {
+function showConfirmation(isAttending, confirmed) {
   stepRsvp.style.display    = 'none';
   stepConfirm.style.display = 'block';
 
-  const firstName  = submitterName ? submitterName.split(' ')[0] : 'there';
-  const confirmMsg = document.getElementById('confirm-message');
+  var firstName  = submitterName ? submitterName.split(' ')[0] : 'there';
+  var confirmMsg = document.getElementById('confirm-message');
 
-  if (attending.length > 0 && declining.length === 0) {
+  if (confirmed === false) {
+    confirmMsg.innerHTML =
+      "Hmm, we couldn't confirm your RSVP went through, " + firstName + ". " +
+      'Please <a href="mailto:olicevincent@gmail.com?subject=RSVP%20issue" class="link">email us</a> ' +
+      "so we can sort it out — sorry about the hassle.";
+  } else if (isAttending) {
     confirmMsg.textContent =
-      'We\'re so excited to celebrate with you, ' + firstName + '! ' +
-      'We\'ll be in touch with final details closer to the time.';
-  } else if (attending.length === 0) {
-    confirmMsg.textContent =
-      'We\'re sorry you won\'t be able to make it, ' + firstName +
-      ' \u2014 we\'ll be thinking of you. Thank you for letting us know.';
+      "We're so excited to celebrate with you, " + firstName + "! " +
+      "We'll be in touch with final details closer to the time.";
   } else {
     confirmMsg.textContent =
-      'Thank you! We\'re looking forward to celebrating with ' +
-      attending.join(' & ') + '. We\'ll miss ' + declining.join(' & ') + '.';
+      "We're sorry you won't be able to make it, " + firstName + " \u2014 " +
+      "we'll be thinking of you. Thank you for letting us know.";
   }
+
+  // Skip the partner nudge entirely if we're not sure this submission worked
+  var partners = (confirmed !== false && currentGuest)
+    ? currentGuest.names.filter(function (n) { return normaliseName(n) !== normaliseName(submitterName); })
+    : [];
 
   /*
     renderNudge() rebuilds the nudge block from scratch using sessionSubmitted.
